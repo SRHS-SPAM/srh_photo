@@ -4,10 +4,10 @@ import "./PhotoFrame.css";
 
 const frameLayouts = {
   pixcel_frame: [
-    { width: 512, height: 612, top: 186, left: 63 },
-    { width: 512, height: 612, top: 186, left: 626 },
-    { width: 512, height: 612, top: 901, left: 63 },
-    { width: 512, height: 612, top: 901, left: 626 },
+    { width: 512, height: 612, top: 406, left: 63 },
+    { width: 512, height: 612, top: 137, left: 626 },
+    { width: 512, height: 612, top: 1050, left: 63 },
+    { width: 512, height: 612, top: 781, left: 626 },
   ],
   light_frame: [
     { width: 512, height: 612, top: 406, left: 63 },
@@ -26,6 +26,12 @@ const frameLayouts = {
     { width: 512, height: 612, top: 137, left: 626 },
     { width: 512, height: 612, top: 1050, left: 63 },
     { width: 512, height: 612, top: 781, left: 626 },
+  ],
+  merun_frame: [
+    { width: 513, height: 612, top: 406, left: 63 },
+    { width: 513, height: 612, top: 137, left: 626 },
+    { width: 513, height: 612, top: 1050, left: 63 },
+    { width: 513, height: 612, top: 781, left: 625 },
   ],
   spam_frame: [
     { width: 512, height: 612, top: 406, left: 63 },
@@ -422,7 +428,7 @@ const PhotoFrameTest = ({ photos, frameType, onNext, title = "인생네컷" }) =
             marginLeft: '5px'
           }}
         >
-          처음으로 {'>'}
+          저장으로 {'>'}
         </button>
       </div>
 
