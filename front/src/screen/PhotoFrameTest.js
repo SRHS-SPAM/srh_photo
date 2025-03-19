@@ -206,7 +206,7 @@ const PhotoFrameTest = ({ photos, frameType, onNext, title = "인생네컷" }) =
           alert("이미지 합성 중 오류가 발생했습니다.");
           return;
         }
-      
+        
         if (action === "print") {
           const printContent = `
           <html>
@@ -253,12 +253,89 @@ const PhotoFrameTest = ({ photos, frameType, onNext, title = "인생네컷" }) =
           link.href = imgData;
           link.download = `${title}_${new Date().getTime()}.png`;
           link.click();
+        } else if (action === "upload") {
+          // 이미지를 Django 백엔드로 전송
+          uploadImageToDjango(imgData);
         }
         setIsLoading(false);
       });
     } else {
       // html2canvas 방식 사용
       captureWithHtml2Canvas(action);
+    }
+  };
+  
+  // Django 백엔드로 이미지 업로드하는 함수
+  const uploadImageToDjango = (imgData) => {
+    // Base64 데이터 URL에서 실제 바이너리 데이터 추출
+    // "data:image/png;base64," 부분을 제거하고 실제 데이터만 가져옴
+    const base64Data = imgData.split(',')[1];
+    
+    // FormData 객체 생성
+    const formData = new FormData();
+    
+    // base64 문자열을 Blob으로 변환
+    const byteCharacters = atob(base64Data);
+    const byteArrays = [];
+    
+    for (let i = 0; i < byteCharacters.length; i++) {
+      byteArrays.push(byteCharacters.charCodeAt(i));
+    }
+    
+    const byteArray = new Uint8Array(byteArrays);
+    const blob = new Blob([byteArray], { type: 'image/png' });
+    
+    // FormData에 파일 추가
+    formData.append('image', blob, `${title}_${new Date().getTime()}.png`);
+    
+    // 필요한 추가 데이터 (예: 프레임 타입, 사용자 ID 등)
+    formData.append('frame_type', frameType);
+    formData.append('title', title);
+    
+    // Django 백엔드로 POST 요청 보내기
+    fetch('https://your-django-backend-url.com/api/upload-image/', {
+      method: 'POST',
+      body: formData,
+      // 필요한 경우 인증 헤더 추가
+      // headers: {
+      //   'Authorization': 'Bearer your-token-here'
+      // }
+    })
+      .then(response => {
+        if (!response.ok) {
+          throw new Error('서버 응답이 올바르지 않습니다.');
+        }
+        return response.json();
+      })
+      .then(data => {
+        console.log('이미지 업로드 성공:', data);
+        
+        // QR 코드 URL을 응답으로 받았다면 UI 업데이트
+        if (data.qr_code_url) {
+          // QR 코드 이미지 업데이트 로직
+          updateQRCode(data.qr_code_url);
+        }
+        
+        alert('이미지가 성공적으로 업로드되었습니다!');
+      })
+      .catch(error => {
+        console.error('이미지 업로드 실패:', error);
+        alert('이미지 업로드 중 오류가 발생했습니다.');
+      });
+  };
+  
+  // QR 코드 이미지 업데이트 함수
+  const updateQRCode = (qrCodeUrl) => {
+    // 현재 QR 코드 placeholder를 실제 QR 코드로 교체
+    const qrPlaceholder = document.querySelector('.qr-placeholder');
+    if (qrPlaceholder) {
+      qrPlaceholder.innerHTML = '';
+      const qrImage = document.createElement('img');
+      qrImage.src = qrCodeUrl;
+      qrImage.alt = 'QR Code';
+      qrImage.style.width = '100%';
+      qrImage.style.height = '100%';
+      qrPlaceholder.appendChild(qrImage);
     }
   };
 
