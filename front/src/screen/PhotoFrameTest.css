@@ -1,0 +1,132 @@
+.result-container{
+    width: 100vw;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    
+}
+
+.photo-frame-container{
+    width: 60%;
+    height: 100vh;
+    display: flex;
+    
+}
+
+.preview-container{
+    width: 50%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.merged-image-preview{
+    width: 300px; 
+    height: 450px;
+    margin: 0 auto;
+    text-align: center; 
+}
+
+.result-image{
+    width: 100%;
+    height: 100%;
+    margin-bottom: 50%;
+    object-fit: contain; 
+}
+
+.loading-preview{
+    width: 300px;
+    height: 450px;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #f0f0f0;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+}
+
+.frame_container{
+    position: relative;
+    width: 300px;
+    height: 450px;
+    margin: 0 auto;
+    display: none;
+}
+
+.frame-overlay{
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    z-index: 10;
+}
+
+.section2{
+    width: 50%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.qr-section{
+    width: 90%;
+    height: 30%;
+    background-color: #f0f0f0; 
+    padding: 15px; 
+    border-radius: 25px;
+    margin-top: 15px;
+    text-align: center;
+}
+
+.qr-placeholder{
+    width: 30%; 
+    height: 65%; 
+    margin-top: 10px;
+    background-color: #ccc;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 30px;
+    font-weight: bold;
+}
+
+.qr-image{
+    width: 30%; 
+    height: 65%; 
+    margin-top: 10px;
+    background-color: #ccc;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 30px;
+    font-weight: bold;
+}
+
+.print-button{
+    width: 300px;
+    height: 73px;
+    margin-top: 10px;
+    background-color: #ddd;
+    border: none;
+    border-radius: 16px;
+    cursor: pointer;
+}
+
+.back-button{
+    width: 20%;
+    height: 5%;
+    background-color: #3f3f3f;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;    
+    margin-left: 50%;
+}
+
+.not-see{
+    display: none;
+}
