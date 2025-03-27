@@ -46,62 +46,6 @@ const PhotoFrameTest = ({ photos, frameType, onBack, title = "인생네컷" }) =
   const [qrCodeUrl, setQrCodeUrl] = useState(null);
   const [isUploading, setIsUploading] = useState(false);
 
-  // Canvas로 이미지 합성하기
-  const mergeImagesWithCanvas = async () => {
-    const canvas = canvasRef.current;
-    const ctx = canvas.getContext('2d');
-    
-    // 프레임의 원래 크기를 기준으로 설정
-    canvas.width = 1200; // 프레임 너비에 맞게 조정
-    canvas.height = 1800; // 프레임 높이에 맞게 조정
-    
-    try {
-      // 배경 그리기 (프레임이 투명 배경인 경우)
-      ctx.fillStyle = "#FFFFFF";
-      ctx.fillRect(0, 0, canvas.width, canvas.height);
-      
-      // 각 사진 로드 및 그리기
-      for (let i = 0; i < Math.min(photos.length, layouts.length); i++) {
-        if (!photos[i]) continue;
-        
-        const img = new Image();
-        img.crossOrigin = "anonymous";
-        await new Promise((resolve, reject) => {
-          img.onload = resolve;
-          img.onerror = reject;
-          img.src = photos[i];
-        });
-        
-        const layout = layouts[i];
-        ctx.drawImage(img, layout.left, layout.top, layout.width, layout.height);
-      }
-      
-      // 프레임 이미지 로드 및 그리기
-      const frameImg = new Image();
-      frameImg.crossOrigin = "anonymous";
-      await new Promise((resolve, reject) => {
-        frameImg.onload = resolve;
-        frameImg.onerror = (e) => {
-          console.error("프레임 이미지 로드 실패:", e);
-          reject(e);
-        };
-        frameImg.src = `${process.env.PUBLIC_URL}/${frameType}.png`;
-      });
-      
-      ctx.drawImage(frameImg, 0, 0, canvas.width, canvas.height);
-      
-      // 결과 URL 설정
-      const url = canvas.toDataURL('image/png');
-      setMergedImageUrl(url);
-      setIsPreviewReady(true);
-      
-      return url;
-    } catch (error) {
-      console.error("이미지 합성 중 오류 발생:", error);
-      return null;
-    }
-  };
-
   // 이미지를 서버에 업로드하고 QR 코드 URL 받기
   const uploadImageToServer = async (imageUrl) => {
     try {
@@ -171,6 +115,103 @@ const PhotoFrameTest = ({ photos, frameType, onBack, title = "인생네컷" }) =
       setIsUploading(false);
       // 사용자에게 오류 메시지를 표시하기 위한 상태 업데이트 추가 가능
       // setErrorMessage(error.message);
+      return null;
+    }
+  };
+
+  // Canvas로 이미지 합성하기
+   const mergeImagesWithCanvas = async () => {
+    const canvas = canvasRef.current;
+    const ctx = canvas.getContext('2d');
+    
+    canvas.width = 1200;
+    canvas.height = 1800;
+    
+    try {
+      // 배경 그리기
+      ctx.fillStyle = "#FFFFFF";
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      
+      // 각 사진 로드 및 그리기
+      for (let i = 0; i < Math.min(photos.length, layouts.length); i++) {
+        if (!photos[i]) continue;
+        
+        const img = new Image();
+        img.crossOrigin = "anonymous";
+        await new Promise((resolve, reject) => {
+          img.onload = resolve;
+          img.onerror = reject;
+          img.src = photos[i];
+        });
+        
+        const layout = layouts[i];
+        ctx.drawImage(img, layout.left, layout.top, layout.width, layout.height);
+      }
+      
+      // 프레임 이미지 로드 및 그리기
+      const frameImg = new Image();
+      frameImg.crossOrigin = "anonymous";
+      await new Promise((resolve, reject) => {
+        frameImg.onload = resolve;
+        frameImg.onerror = (e) => {
+          console.error("프레임 이미지 로드 실패:", e);
+          reject(e);
+        };
+        frameImg.src = `${process.env.PUBLIC_URL}/${frameType}.png`;
+      });
+      
+      ctx.drawImage(frameImg, 0, 0, canvas.width, canvas.height);
+      
+      // QR 코드 이미지 추가 (위치 조정)
+      if (qrCodeUrl) {
+        return new Promise((resolve, reject) => {
+          const qrImg = new Image();
+          qrImg.crossOrigin = "anonymous";
+          
+          qrImg.onload = () => {
+            console.log('QR 코드 이미지 로드 성공', qrImg.width, qrImg.height);
+            
+            const qrWidth = 300;
+            const qrHeight = 300;
+            const qrPadding = 50;
+
+            // QR 코드 위치를 프레임 오른쪽 하단으로 변경
+            ctx.drawImage(
+              qrImg, 
+              canvas.width - qrWidth - qrPadding, 
+              canvas.height - qrHeight - qrPadding, 
+              qrWidth, 
+              qrHeight
+            );
+
+            const url = canvas.toDataURL('image/png');
+            setMergedImageUrl(url);
+            setIsPreviewReady(true);
+            resolve(url);
+          };
+
+          qrImg.onerror = (error) => {
+            console.error('QR 코드 이미지 로드 실패', error);
+            
+            // 이미지 로드 실패해도 기존 캔버스 이미지는 유지
+            const url = canvas.toDataURL('image/png');
+            setMergedImageUrl(url);
+            setIsPreviewReady(true);
+            resolve(url);
+          };
+
+          qrImg.src = qrCodeUrl;
+        });
+      }
+      
+      // QR 코드 없을 경우의 기본 처리
+      const url = canvas.toDataURL('image/png');
+      setMergedImageUrl(url);
+      setIsPreviewReady(true);
+      
+      return url;
+    } catch (error) {
+      console.error("이미지 합성 중 오류 발생:", error);
       return null;
     }
   };
