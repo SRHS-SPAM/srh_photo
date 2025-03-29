@@ -144,7 +144,7 @@ const PhotoFrameTest = ({ photos, frameType, onBack, title = "인생네컷" }) =
           // 명시적으로 Content-Type을 설정하지 않음 (FormData가 자동으로 설정)
         },
         // credentials: 'include' 대신 CORS 요청에 더 적합한 설정 사용
-        credentials: 'same-origin', // 같은 도메인일 때만 쿠키 전송
+        credentials: 'include', // 같은 도메인일 때만 쿠키 전송
         mode: 'cors', // CORS 모드 명시적 설정
         body: formData,
       });
