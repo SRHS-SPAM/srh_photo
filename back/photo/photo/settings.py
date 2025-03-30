@@ -44,6 +44,7 @@ INSTALLED_APPS = [
     'catalog.apps.CatalogConfig',
     'rest_framework',
     'rest_framework.authtoken',
+    'django_extensions',
 ]
 
 MIDDLEWARE = [
@@ -206,3 +207,5 @@ CORS_ALLOW_HEADERS = [
     "x-csrftoken",
     "x-requested-with",
 ]
+
+

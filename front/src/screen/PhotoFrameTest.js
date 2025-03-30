@@ -131,7 +131,7 @@ const PhotoFrameTest = ({ photos, frameType, onBack, title = "인생네컷" }) =
       console.log("사용할 API 기본 URL:", apiBaseUrl);
   
       // 전체 API URL 구성
-      const apiUrl = `${apiBaseUrl}/api/photos/`;
+      const apiUrl = `${apiBaseUrl}/api/upload/`;
       console.log("최종 API URL:", apiUrl);
   
       // 서버에 이미지 업로드 - CORS 문제 해결을 위한 설정
