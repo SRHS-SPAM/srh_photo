@@ -6,6 +6,7 @@ import "./WebcamCapture.css";
  * WebcamCapture 컴포넌트 - 웹캠을 사용하여 사진 촬영 기능을 제공합니다.
  * 사용자가 카메라 버튼을 클릭하면 5초 카운트다운 후 자동으로 사진을 촬영합니다.
  * 최대 4장의 사진을 자동으로 촬영할 수 있으며, 각 사진은 960x1280 크기로 조정됩니다.
+ * 외부 HDMI 웹캠이 연결되어 있으면 해당 웹캠을 우선 사용하고, 없으면 내장 웹캠을 사용합니다.
  * 
  * @param {function} addPhoto - 촬영된 사진을 상위 컴포넌트에 전달하는 콜백 함수
  * @param {number} photoCount - 현재까지 촬영된 사진 수 (0-4)
@@ -15,10 +16,48 @@ const WebcamCapture = ({ addPhoto, photoCount, clearPhoto }) => {
   const [capturing, setCapturing] = useState(false);// 현재 촬영 진행 중인지 여부를 나타내는 상태 (true: 촬영 중, false: 대기 중)
   const [countdown, setCountdown] = useState(0);// 카운트다운 타이머 값 (5초부터 0초까지 감소)
   const [photoIndex, setPhotoIndex] = useState(0);// 현재 촬영 중인 사진의 인덱스 (0부터 시작하여 최대 3까지)
-  const [isProcessing, setIsProcessing] = useState(false);// 사진 처리(크롭 등) 중인지 여부를 나타내는 상태 (중복 처리 방지용)
+  const [isProcessing, setIsProcessing] = useState(false);// 사진 처리(크롭 등) 중인지 여부를 나타내는 상태 (중복 처리 방지)
+  const [videoDevices, setVideoDevices] = useState([]);// 사용 가능한 비디오 장치 목록
+  const [selectedDeviceId, setSelectedDeviceId] = useState("");// 선택된 비디오 장치 ID
 
-  // 사용할 카메라 디바이스 ID (특정 카메라를 지정할 때 사용)
-  const deviceId = "7782baa2ef9fe736b816e8ecfcec158bd9057841d9a2f433e4006ed03f3570e8";
+  // 사용 가능한 비디오 장치를 감지하는 함수
+  const getVideoDevices = useCallback(async () => {
+    try {
+      const devices = await navigator.mediaDevices.enumerateDevices();
+      const videoInputs = devices.filter(device => device.kind === "videoinput");
+      setVideoDevices(videoInputs);
+      
+      // HDMI 연결 웹캠 탐지 (일반적으로 외부 웹캠은 내장 웹캠 이후에 등록됨)
+      const externalWebcams = videoInputs.filter(device => 
+        !device.label.toLowerCase().includes("built") && 
+        !device.label.toLowerCase().includes("internal")
+      );
+      
+      // 외부 웹캠이 있으면 첫 번째 외부 웹캠을 선택, 없으면 내장 웹캠 선택
+      if (externalWebcams.length > 0) {
+        console.log("외부 웹캠 감지됨:", externalWebcams[0].label);
+        setSelectedDeviceId(externalWebcams[0].deviceId);
+      } else if (videoInputs.length > 0) {
+        console.log("내장 웹캠 사용:", videoInputs[0].label);
+        setSelectedDeviceId(videoInputs[0].deviceId);
+      }
+    } catch (error) {
+      console.error("비디오 장치 감지 오류:", error);
+    }
+  }, []);
+
+  // 컴포넌트 마운트 시 비디오 장치 감지
+  useEffect(() => {
+    getVideoDevices();
+    
+    // 장치 변경 이벤트 리스너 등록
+    navigator.mediaDevices.addEventListener('devicechange', getVideoDevices);
+    
+    // 컴포넌트 언마운트 시 이벤트 리스너 제거
+    return () => {
+      navigator.mediaDevices.removeEventListener('devicechange', getVideoDevices);
+    };
+  }, [getVideoDevices]);
 
   const playSound = () => { // 카메라 소리
     const audio = new Audio("./mp3.mp3");
@@ -145,17 +184,21 @@ const WebcamCapture = ({ addPhoto, photoCount, clearPhoto }) => {
   return (
     <div className="webcam-container">
       <img src={`${process.env.PUBLIC_URL}/camera-frame.png`} className="camera-frame" alt="카메라 프레임"/>
-      <Webcam
-        audio={false}                 // 오디오 캡처 비활성화
-        ref={webcamRef}               // 웹캠 참조 설정 (스크린샷 촬영에 사용)
-        screenshotFormat="image/jpeg" // 스크린샷 포맷 지정
-        videoConstraints={{           // 비디오 설정
-          deviceId: deviceId,         // 사용할 카메라 장치 ID
-          width: 960,                 // 비디오 너비
-          height: 1280,               // 비디오 높이
-        }}
-        className="webcam"            // CSS 클래스 적용
-      />
+      {selectedDeviceId ? (
+        <Webcam
+          audio={false}                 // 오디오 캡처 비활성화
+          ref={webcamRef}               // 웹캠 참조 설정 (스크린샷 촬영에 사용)
+          screenshotFormat="image/jpeg" // 스크린샷 포맷 지정
+          videoConstraints={{           // 비디오 설정
+            deviceId: selectedDeviceId, // 선택된 카메라 장치 ID 사용
+            width: 960,                 // 비디오 너비
+            height: 1280,               // 비디오 높이
+          }}
+          className="webcam"            // CSS 클래스 적용
+        />
+      ) : (
+        <div className="webcam-loading">카메라를 찾는 중...</div>
+      )}
       
       {/* 카운트다운 오버레이 - 촬영 중일 때만 표시 */}
       {capturing && countdown > 0 && (
@@ -168,8 +211,8 @@ const WebcamCapture = ({ addPhoto, photoCount, clearPhoto }) => {
       </div>
       
       {/* 카메라 촬영 버튼 - 클릭 시 촬영 시작 */}
-      <button className="camera-button" onClick={capture}>
-        <img className="camera-icon"  src={`${process.env.PUBLIC_URL}/camera.png`} alt="촬영" />
+      <button className="camera-button" onClick={capture} disabled={!selectedDeviceId}>
+        <img className="camera-icon" src={`${process.env.PUBLIC_URL}/camera.png`} alt="촬영" />
       </button>
     </div>
   );
