@@ -37,7 +37,7 @@
   left: 50%; /* 수평 중앙 */
   transform: translate(-45%, -50%);
   font-size: 250px; /* 타이머 크기 */
-  color: #3f3f3f; /* 타이머 색상 */
+  color: white; /* 타이머 색상 */
   font-weight: bold; /* 두껍게 표시 */
   font-family: EF_jejudoldam;
   z-index: 2;

@@ -36,6 +36,7 @@ const frameLayouts = {
 };
 
 const PhotoFrameTest = ({ photos, frameType, onBack, title = "인생네컷" }) => {
+  // 컴포넌트 상태 관리를 위한 상태 변수들
   const layouts = frameLayouts[frameType] || [];
   const canvasRef = useRef(null);
   const containerRef = useRef(null);
@@ -45,6 +46,8 @@ const PhotoFrameTest = ({ photos, frameType, onBack, title = "인생네컷" }) =
   const [frameLoaded, setFrameLoaded] = useState(false);
   const [qrCodeUrl, setQrCodeUrl] = useState(null);
   const [isUploading, setIsUploading] = useState(false);
+  // 인쇄 상태 추적을 위한 ref
+  const hasPrintedRef = useRef(false);
 
   // 이미지를 서버에 업로드하고 QR 코드 URL 받기
   const uploadImageToServer = async (imageUrl) => {
@@ -82,12 +85,8 @@ const PhotoFrameTest = ({ photos, frameType, onBack, title = "인생네컷" }) =
       const uploadResponse = await fetch(apiUrl, {
         method: 'POST',
         headers: {
-          // CSRF 토큰은 같은 도메인일 때만 필요
-          // 'X-CSRFToken': getCookie('csrftoken'),
           'X-Requested-With': 'XMLHttpRequest',
-          // 명시적으로 Content-Type을 설정하지 않음 (FormData가 자동으로 설정)
         },
-        // credentials: 'include' 대신 CORS 요청에 더 적합한 설정 사용
         credentials: 'include', // 같은 도메인일 때만 쿠키 전송
         mode: 'cors', // CORS 모드 명시적 설정
         body: formData,
@@ -113,8 +112,6 @@ const PhotoFrameTest = ({ photos, frameType, onBack, title = "인생네컷" }) =
     } catch (error) {
       console.error('이미지 업로드 중 오류 발생:', error);
       setIsUploading(false);
-      // 사용자에게 오류 메시지를 표시하기 위한 상태 업데이트 추가 가능
-      // setErrorMessage(error.message);
       return null;
     }
   };
@@ -249,46 +246,7 @@ const PhotoFrameTest = ({ photos, frameType, onBack, title = "인생네컷" }) =
           const imgData = canvas.toDataURL("image/png");
           
           if (action === "print") {
-            const printContent = `
-            <html>
-              <head>
-                <title>${title}</title>
-                <style>
-                  @page {
-                    size: 100mm 148mm; /* Hagaki size */
-                    margin: 0;
-                  }
-                  body {
-                    margin: 0;
-                    padding: 0;
-                  }
-                  img {
-                    width: 100mm;
-                    height: 148mm;
-                    object-fit: contain;
-                  }
-                </style>
-              </head>
-              <body>
-                <img src="${imgData}" alt="Print Image">
-                <script>
-                  window.onload = function() {
-                    setTimeout(function() {
-                      window.print();
-                      window.close();
-                    }, 500);
-                  };
-                </script>
-              </body>
-            </html>
-          `;
-            const printWindow = window.open("", "_blank");
-            if (printWindow) {
-              printWindow.document.write(printContent);
-              printWindow.document.close();
-            } else {
-              alert("팝업이 차단되었습니다. 팝업 차단을 해제하고 다시 시도해주세요.");
-            }
+            autoPrint(imgData);
           } else if (action === "download") {
             const link = document.createElement("a");
             link.href = imgData;
@@ -305,6 +263,83 @@ const PhotoFrameTest = ({ photos, frameType, onBack, title = "인생네컷" }) =
     });
   };
 
+  // 자동 출력 기능
+  const autoPrint = (imgData) => {
+    const printContent = `
+      <html>
+        <head>
+          <title>${title}</title>
+          <style>
+            @page {
+              size: 100mm 148mm; /* Hagaki size */
+              margin: 0;
+            }
+            body {
+              margin: 0;
+              padding: 0;
+              background-color: white;
+            }
+            img {
+              width: 100mm;
+              height: 148mm;
+              object-fit: contain;
+              display: block;
+            }
+            /* 인쇄 시 배경색도 인쇄되도록 설정 */
+            @media print {
+              body {
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+              }
+            }
+          </style>
+        </head>
+        <body>
+          <img id="printImage" src="${imgData}" alt="Print Image">
+          <script>
+            // 페이지가 완전히 로드되면 자동으로 인쇄 다이얼로그 실행
+            window.onload = function() {
+              // 이미지 로드 완료 확인
+              var img = document.getElementById('printImage');
+              
+              // 이미지가 이미 로드되었거나 로드될 때 인쇄 시작
+              if (img.complete) {
+                startPrint();
+              } else {
+                img.onload = startPrint;
+              }
+              
+              function startPrint() {
+                console.log('이미지 로드 완료, 인쇄 준비');
+                // 이미지 로드 후 즉시 인쇄 시작
+                setTimeout(function() {
+                  console.log('인쇄 다이얼로그 실행');
+                  window.print();
+                  
+                  // 인쇄 다이얼로그가 닫힌 후 창 닫기
+                  window.onfocus = function() {
+                    console.log('인쇄 다이얼로그 종료, 창 닫기');
+                    setTimeout(function() {
+                      window.close();
+                    }, 500);
+                  };
+                }, 500);
+              }
+            };
+          </script>
+        </body>
+      </html>
+    `;
+    
+    const printWindow = window.open("", "_blank");
+    if (printWindow) {
+      printWindow.document.write(printContent);
+      printWindow.document.close();
+    } else {
+      alert("팝업이 차단되었습니다. 팝업 차단을 해제하고 다시 시도해주세요.");
+    }
+  };
+
   // 다운로드/출력 메소드
   const handleAction = (action, method = "html2canvas") => {
     if (method === "canvas") {
@@ -318,46 +353,7 @@ const PhotoFrameTest = ({ photos, frameType, onBack, title = "인생네컷" }) =
         }
       
         if (action === "print") {
-          const printContent = `
-          <html>
-            <head>
-              <title>${title}</title>
-              <style>
-                @page {
-                  size: 100mm 148mm; /* Hagaki size */
-                  margin: 0;
-                }
-                body {
-                  margin: 0;
-                  padding: 0;
-                }
-                img {
-                  width: 100mm;
-                  height: 148mm;
-                  object-fit: contain;
-                }
-              </style>
-            </head>
-            <body>
-              <img src="${imgData}" alt="Print Image">
-              <script>
-                window.onload = function() {
-                  setTimeout(function() {
-                    window.print();
-                    window.close();
-                  }, 500);
-                };
-              </script>
-            </body>
-          </html>
-        `;
-          const printWindow = window.open("", "_blank");
-          if (printWindow) {
-            printWindow.document.write(printContent);
-            printWindow.document.close();
-          } else {
-            alert("팝업이 차단되었습니다. 팝업 차단을 해제하고 다시 시도해주세요.");
-          }
+          autoPrint(imgData);
         } else if (action === "download") {
           const link = document.createElement("a");
           link.href = imgData;
@@ -383,17 +379,27 @@ const PhotoFrameTest = ({ photos, frameType, onBack, title = "인생네컷" }) =
     setFrameLoaded(false);
   };
 
-  // 컴포넌트가 마운트되면 미리 이미지 합성
+  // 컴포넌트가 마운트되면 미리 이미지 합성 및 자동 인쇄 시작
   useEffect(() => {
-    if (photos.length > 0 && frameType) {
+    if (photos.length > 0 && frameType && !hasPrintedRef.current) {
       mergeImagesWithCanvas().then(imgUrl => {
         if (imgUrl) {
           // 합성된 이미지를 서버에 업로드하고 QR 코드 URL 받기
           uploadImageToServer(imgUrl);
+          
+          // 자동으로 인쇄 시작 (한 번만)
+          if (!hasPrintedRef.current) {
+            hasPrintedRef.current = true;
+            setIsLoading(true);
+            setTimeout(() => {
+              autoPrint(imgUrl);
+              setIsLoading(false);
+            }, 1000); // 이미지 처리 완료 후 1초 후에 인쇄 시작
+          }
         }
       });
     }
-  }, [photos, frameType]);
+  }, []);
 
   return (
     <div className="result-container">
