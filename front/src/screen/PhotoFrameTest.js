@@ -69,13 +69,13 @@ const PhotoFrameTest = ({ photos, frameType, onBack, title = "인생네컷" }) =
       // API 기본 URL 결정 (개발 환경 vs 프로덕션 환경)
       const apiBaseUrl = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
         ? 'http://127.0.0.1:8000'
-        : 'https://srh-photo-d86feda25493.herokuapp.com';
+        : 'https://srh-photo.onrender.com';
   
       console.log("현재 호스트:", window.location.hostname);
       console.log("사용할 API 기본 URL:", apiBaseUrl);
   
       // 전체 API URL 구성
-      const apiUrl = `${apiBaseUrl}/api/photos/`;
+      const apiUrl = `${apiBaseUrl}/api/upload/`;
       console.log("최종 API URL:", apiUrl);
   
       // 서버에 이미지 업로드 - CORS 문제 해결을 위한 설정
@@ -88,7 +88,7 @@ const PhotoFrameTest = ({ photos, frameType, onBack, title = "인생네컷" }) =
           // 명시적으로 Content-Type을 설정하지 않음 (FormData가 자동으로 설정)
         },
         // credentials: 'include' 대신 CORS 요청에 더 적합한 설정 사용
-        credentials: 'same-origin', // 같은 도메인일 때만 쿠키 전송
+        credentials: 'include', // 같은 도메인일 때만 쿠키 전송
         mode: 'cors', // CORS 모드 명시적 설정
         body: formData,
       });

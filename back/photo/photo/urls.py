@@ -28,6 +28,7 @@ from django.conf.urls.static import static
 
 from catalog.views import PhotoViewSet, some_endpoint
 
+
 def serve_manifest(request):
     # React 빌드 폴더 내 manifest.json 위치 지정
     file_path = os.path.join(settings.BASE_DIR, '/front/public/manifest.json')

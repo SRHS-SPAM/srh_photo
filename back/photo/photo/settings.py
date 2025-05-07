@@ -44,13 +44,13 @@ INSTALLED_APPS = [
     'catalog.apps.CatalogConfig',
     'rest_framework',
     'rest_framework.authtoken',
+    'django_extensions',
 ]
 
 MIDDLEWARE = [
     'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
-    'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'whitenoise.middleware.WhiteNoiseMiddleware',
@@ -61,7 +61,7 @@ MIDDLEWARE = [
 ]
 
 
-
+ASGI_APPLICATION = 'photo.asgi.application'
 ROOT_URLCONF = 'photo.urls'
 
 TEMPLATES = [
@@ -95,6 +95,7 @@ DATABASES = {
 }
 
 ALLOWED_HOSTS = [
+    'srh-photo.onrender.com',
     'srh-photo-d86feda25493.herokuapp.com',
     'spam4cut.com',
     'www.spam4cut.com',
@@ -176,14 +177,14 @@ CORS_ALLOWED_ORIGINS = [
     'http://localhost:3000',  # React 앱이 실행되는 도메인 (개발 환경)
     'http://localhost:8000',
     'http://127.0.0.1:3000',
-    'https://srh-photo-d86feda25493.herokuapp.com',    # 실제 배포된 프론트엔드 도메인 (배포 환경)
+    'https://srh-photo.onrender.com',
 ]
 # 신뢰할 수 있는 출처 설정 (CSRF 검증에 사용됨)
 CSRF_TRUSTED_ORIGINS = [
     'http://localhost:3000',
     'http://127.0.0.1:3000',
     'http://localhost:8000',
-    'https://srh-photo-d86feda25493.herokuapp.com',
+    'https://srh-photo.onrender.com',
 ]
 
 CORS_ALLOW_METHODS = [
@@ -206,3 +207,5 @@ CORS_ALLOW_HEADERS = [
     "x-csrftoken",
     "x-requested-with",
 ]
+
+
