@@ -71,6 +71,37 @@ class Photo(models.Model):
             # 오류가 발생해도 객체는 저장
             if not is_new:
                 super().save(*args, **kwargs)
+        # 이미지 출력 시도 (Windows용)
+        try:
+            if self.image and os.path.isfile(self.image.path):
+                print_image(self.image.path)
+        except Exception as e:
+            print(f"출력 중 오류 발생: {e}")
+
+        
     
     def get_absolute_url(self):
         return reverse('photo_detail', args=[str(self.id)])
+    
+# Windows에서 이미지 파일을 프린트하는 함수
+import win32print
+import win32api
+import os
+
+def print_image(filepath):
+    try:
+        # 현재 기본 프린터 이름 확인
+        printer_name = win32print.GetDefaultPrinter()
+        print(f"사용 중인 프린터: {printer_name}")
+
+        # Windows의 기본 이미지 뷰어를 이용해 출력 명령 전송
+        win32api.ShellExecute(
+            0,
+            "print",
+            filepath,
+            None,
+            ".",
+            0
+        )
+    except Exception as e:
+        print(f"출력 오류: {e}")

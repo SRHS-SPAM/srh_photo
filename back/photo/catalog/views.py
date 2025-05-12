@@ -88,3 +88,18 @@ def get_current_date(request):
 def some_endpoint(request):
     data = {'message': 'Hello from Django!'}
     return JsonResponse(data)
+
+#이미지 자동 출력
+from rest_framework.decorators import api_view
+from rest_framework.response import Response
+from .models import Photo
+
+@api_view(['POST'])
+def upload_photo(request):
+    image = request.FILES['file']
+    title = request.data.get('title', 'Untitled')
+
+    photo = Photo(title=title, image=image)
+    photo.save()  # 이 때 save()의 print() 로직이 실행됨
+
+    return Response({'message': '업로드 및 출력 완료'})
