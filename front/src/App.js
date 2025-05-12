@@ -2,10 +2,10 @@ import React, { useState } from "react";
 import StartScreen from "./screen/StartScreen";
 import ChooseScreen from "./screen/ChooseScreeen";
 import WebcamCapture from "./screen/WebcamCapture"; // 예시 프레임 카메라 컴포넌트
-import PhotoFrame from "./screen/PhotoFrame";
+import PhotoFrame from "./screen/PhotoFrame"; // 아 이거 저거 바꿔야 하는데데 근데 바꾸기에 너무 멀리옴
 import IdolCam from "./screen/IdolCam";
 import TutorialScreen from "./screen/TutorialScreen";
-import PhotoFrameTest from "./screen/PhotoFrameTest"
+//import PhotoFrameTest from "./screen/PhotoFrameTest"
 
 import "./App.css";
 
@@ -72,7 +72,7 @@ function App() {
       case "result":
         return (
           <div>
-            <PhotoFrameTest photos={photos} frameType={selectedFrame} onBack={handleBack}/>
+            <PhotoFrame photos={photos} frameType={selectedFrame} onBack={handleBack}/>
           </div>
         );
       default:
