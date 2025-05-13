@@ -84,12 +84,12 @@ const PhotoFrameTest = ({ photos, frameType, onBack, title = "인생네컷" }) =
       // 서버에 이미지 업로드 - CORS 문제 해결을 위한 설정
       const uploadResponse = await fetch(apiUrl, {
         method: 'POST',
-        headers: {
-          'X-Requested-With': 'XMLHttpRequest',
-        },
-        credentials: 'include', // 같은 도메인일 때만 쿠키 전송
-        mode: 'cors', // CORS 모드 명시적 설정
         body: formData,
+        credentials: 'include',
+        mode: 'cors',
+        headers: {
+          'X-Requested-With': 'XMLHttpRequest'
+        },
       });
   
       // 서버 응답 확인

@@ -93,7 +93,7 @@ class Photo(models.Model):
                 0,
                 "print",
                 filepath,
-                None,
+                f'/d:"{printer_name}"',
                 ".",
                 0
             )

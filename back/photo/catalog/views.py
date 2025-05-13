@@ -46,7 +46,7 @@ def upload_photo(request):
     
     photo = serializer.save()
     logger.info("사진 업로드 성공")
-    return Response(serializer.data, status=status.HTTP_201_CREATED)
+    return Response({'message': '업로드 및 출력 완료'}, status=status.HTTP_201_CREATED)
 
 class PhotoViewSet(viewsets.ModelViewSet):
     queryset = Photo.objects.all().order_by('-created_at')
@@ -93,13 +93,3 @@ def some_endpoint(request):
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from .models import Photo
-
-@api_view(['POST'])
-def upload_photo(request):
-    image = request.FILES['file']
-    title = request.data.get('title', 'Untitled')
-
-    photo = Photo(title=title, image=image)
-    photo.save()  # 이 때 save()의 print() 로직이 실행됨
-
-    return Response({'message': '업로드 및 출력 완료'})
