@@ -6,6 +6,8 @@ from django.core.files import File
 from PIL import Image
 import uuid
 import os
+import win32print
+import win32api
 
 class Photo(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
@@ -13,27 +15,20 @@ class Photo(models.Model):
     image = models.ImageField(upload_to='photos/')
     qr_code = models.ImageField(upload_to='qr_codes/', blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
-    
+
     def __str__(self):
         return self.title
-    
-    # 들여쓰기 수정 - 이 메서드가 클래스 내부에 제대로 들여쓰기 되어 있어야 함
+
     def save(self, *args, **kwargs):
-        # QR 코드 필드에 이미 파일이 있는지 확인
         qr_exists = bool(self.qr_code.name)
-        
-        # 새 객체인지 확인
         is_new = self.pk is None
         
-        # 먼저 모델을 저장 (새로운 객체의 경우 ID를 얻기 위해)
         if is_new:
             super().save(*args, **kwargs)
-        
-        # QR 코드 항상 생성 (기존 코드는 qr_exists 체크)
+
         try:
-            # QR 코드에 저장할 직접 다운로드 URL 생성
             qr_url = f'https://srh-photo.onrender.com/api/photos/{self.id}/download/'
-            
+
             # QR 코드 생성
             qr = qrcode.QRCode(
                 version=1,
@@ -44,64 +39,68 @@ class Photo(models.Model):
             qr.add_data(qr_url)
             qr.make(fit=True)
             
-            # QR 코드 이미지 생성
             img = qr.make_image(fill_color="black", back_color="white")
-            
-            # BytesIO를 사용하여 메모리에 저장
             buffer = BytesIO()
             img.save(buffer, format='PNG')
             buffer.seek(0)
-            
-            # 파일명 생성
+
+            # QR 코드 파일 저장
             filename = f'qr_{self.id}.png'
-            
-            # 기존 QR 코드가 있으면 삭제
-            if self.qr_code:
-                if os.path.isfile(self.qr_code.path):
-                    os.remove(self.qr_code.path)
-            
-            # QR 코드 저장 (save=False로 재귀 호출 방지)
             self.qr_code.save(filename, File(buffer), save=False)
-            
-            # 이미 저장된 객체라면 다시 저장
+
+            # 이미지와 QR 코드 합성
+            if self.image and os.path.isfile(self.image.path):
+                self.print_image_with_qr(self.image.path, buffer)
+
             if not is_new:
                 super().save(*args, **kwargs)
+
         except Exception as e:
             print(f"QR 코드 생성 오류: {e}")
-            # 오류가 발생해도 객체는 저장
             if not is_new:
                 super().save(*args, **kwargs)
-        # 이미지 출력 시도 (Windows용)
-        try:
-            if self.image and os.path.isfile(self.image.path):
-                print_image(self.image.path)
-        except Exception as e:
-            print(f"출력 중 오류 발생: {e}")
 
-        
-    
+    def print_image_with_qr(self, image_path, qr_buffer):
+        try:
+            # 이미지 불러오기
+            base_image = Image.open(image_path)
+
+            # QR 코드 이미지 불러오기
+            qr_image = Image.open(qr_buffer)
+
+            # QR 코드 크기 조정 (이미지 크기에 맞춰서 크기 변경 가능)
+            qr_image = qr_image.resize((100, 100))  # 예시: QR 코드 크기 100x100
+
+            # QR 코드 위치 지정 (이미지 오른쪽 하단)
+            base_image.paste(qr_image, (base_image.width - qr_image.width, base_image.height - qr_image.height))
+
+            # 임시 파일에 저장 후 출력
+            temp_file_path = "temp_image_with_qr.png"
+            base_image.save(temp_file_path)
+
+            # 이미지 출력
+            self.print_image(temp_file_path)
+
+        except Exception as e:
+            print(f"이미지 및 QR 코드 출력 오류: {e}")
+
+    def print_image(self, filepath):
+        try:
+            printer_name = win32print.GetDefaultPrinter()
+            print(f"사용 중인 프린터: {printer_name}")
+
+            result = win32api.ShellExecute(
+                0,
+                "print",
+                filepath,
+                None,
+                ".",
+                0
+            )
+            print(f"출력 명령 실행 결과: {result}")
+
+        except Exception as e:
+            print(f"출력 오류: {e}")
+
     def get_absolute_url(self):
         return reverse('photo_detail', args=[str(self.id)])
-    
-# Windows에서 이미지 파일을 프린트하는 함수
-import win32print
-import win32api
-import os
-
-def print_image(filepath):
-    try:
-        # 현재 기본 프린터 이름 확인
-        printer_name = win32print.GetDefaultPrinter()
-        print(f"사용 중인 프린터: {printer_name}")
-
-        # Windows의 기본 이미지 뷰어를 이용해 출력 명령 전송
-        win32api.ShellExecute(
-            0,
-            "print",
-            filepath,
-            None,
-            ".",
-            0
-        )
-    except Exception as e:
-        print(f"출력 오류: {e}")
