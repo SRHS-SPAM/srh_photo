@@ -2,9 +2,10 @@ import React, { useState } from "react";
 import StartScreen from "./screen/StartScreen";
 import ChooseScreen from "./screen/ChooseScreeen";
 import WebcamCapture from "./screen/WebcamCapture"; // 예시 프레임 카메라 컴포넌트
-import PhotoFrame from "./screen/PhotoFrame"; // 아 이거 저거 바꿔야 하는데데 근데 바꾸기에 너무 멀리옴
+import PhotoFrame from "./screen/PhotoFrame";
 import IdolCam from "./screen/IdolCam";
 import TutorialScreen from "./screen/TutorialScreen";
+import HowPerson from "./screen/HowPerson";
 //import PhotoFrameTest from "./screen/PhotoFrameTest"
 
 import "./App.css";
@@ -27,11 +28,15 @@ function App() {
   };
 
   const handleStart = () => {
-    setCurrentScreen("tutorial"); // Tutorial로 이동
+    setCurrentScreen("tutorial"); // Tutorial로 이동 > 시작화면
+  };
+
+  const handleHowPerson = () => {
+    setCurrentScreen("howperson"); // Howperdon으로 이동 > 튜토
   };
 
   const handleTutorialComplete = () => {
-    setCurrentScreen("choose"); // ChooseScreen으로 이동
+    setCurrentScreen("choose"); // ChooseScreen으로 이동 > 인원 고르는거
   };
 
   const handleFrameSelect = (frame) => {
@@ -55,7 +60,9 @@ function App() {
       case "start":
         return <StartScreen onStart={handleStart}/>; // onStart 하면 handleStart 호출하는 거
       case "tutorial":
-        return <TutorialScreen onComplete={handleTutorialComplete} />; 
+        return <TutorialScreen onComplete={handleHowPerson} />;
+      case "howperson":
+        return <HowPerson onPerson={handleTutorialComplete}/>
       case "choose":
         return <ChooseScreen selectFrame={handleFrameSelect} />;
       

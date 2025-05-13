@@ -17,7 +17,7 @@ const TutorialScreen = ({ onComplete }) => {
     </ul>
     </div>
     </div>
-            <button className="next-button" onClick={ onComplete }>프레임 고르러 가기</button> 
+            <button className="next-button" onClick={ onComplete }>인원 수 고르러 가기</button> 
         </> 
     )
 }

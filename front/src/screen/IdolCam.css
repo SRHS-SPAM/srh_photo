@@ -1,4 +1,4 @@
-/* .idol-webcam-container의 설정을 조정하여 웹캠, 컨트롤, 타이머의 배치를 조정 */
+.idol-webcam-container의 설정을 조정하여 웹캠, 컨트롤, 타이머의 배치를 조정
 .idol-webcam-container {
   display: flex;
   flex-direction: column;
