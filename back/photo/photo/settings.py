@@ -25,10 +25,10 @@ REACT_APP_DIR = os.path.join(BASE_DIR, '../../front')  # 실제 경로에 맞게
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-&(q+p!pj5u4_lz6#!&=b1^h(#l9pq3et7-pwk3&=r2%9ms*86r'
+SECRET_KEY = os.environ.get('SECRET_KEY', 'django-insecure-&(q+p!pj5u4_lz6#!&=b1^h(#l9pq3et7-pwk3&=r2%9ms*86r')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = os.environ.get('DEBUG', 'True') == 'True'
 
 
 # Application definition
@@ -101,8 +101,13 @@ ALLOWED_HOSTS = [
     'www.spam4cut.com',
     'localhost',
     '127.0.0.1',
-    os.environ.get('ALLOWED_HOST', 'localhost')
+    os.environ.get('ALLOWED_HOST', 'localhost'),
+    '.run.app',  # Cloud Run domains
 ]
+
+# Add Cloud Run specific allowed host if provided
+if cloud_run_host := os.environ.get('CLOUD_RUN_SERVICE_URL'):
+    ALLOWED_HOSTS.append(cloud_run_host)
 
 # settings.py에 아래 설정 추가 (또는 확인)
 REST_FRAMEWORK = {
@@ -179,13 +184,23 @@ CORS_ALLOWED_ORIGINS = [
     'http://127.0.0.1:3000',
     'https://srh-photo.onrender.com',
 ]
+
+# Add Cloud Run URL if provided
+if cloud_run_url := os.environ.get('CLOUD_RUN_SERVICE_URL'):
+    CORS_ALLOWED_ORIGINS.append(cloud_run_url)
+
 # 신뢰할 수 있는 출처 설정 (CSRF 검증에 사용됨)
 CSRF_TRUSTED_ORIGINS = [
     'http://localhost:3000',
     'http://127.0.0.1:3000',
     'http://localhost:8000',
     'https://srh-photo.onrender.com',
+    'https://*.run.app',  # Cloud Run domains
 ]
+
+# Add Cloud Run URL if provided
+if cloud_run_url := os.environ.get('CLOUD_RUN_SERVICE_URL'):
+    CSRF_TRUSTED_ORIGINS.append(cloud_run_url)
 
 CORS_ALLOW_METHODS = [
     "DELETE",
