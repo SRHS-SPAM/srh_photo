@@ -1,0 +1,53 @@
+steps:
+  # Build the container image
+  - name: 'gcr.io/cloud-builders/docker'
+    args:
+      - 'build'
+      - '-t'
+      - 'asia-northeast3-docker.pkg.dev/$PROJECT_ID/srh-photo/app:$COMMIT_SHA'
+      - '-t'
+      - 'asia-northeast3-docker.pkg.dev/$PROJECT_ID/srh-photo/app:latest'
+      - '.'
+
+  # Push the container image to Artifact Registry
+  - name: 'gcr.io/cloud-builders/docker'
+    args:
+      - 'push'
+      - 'asia-northeast3-docker.pkg.dev/$PROJECT_ID/srh-photo/app:$COMMIT_SHA'
+
+  - name: 'gcr.io/cloud-builders/docker'
+    args:
+      - 'push'
+      - 'asia-northeast3-docker.pkg.dev/$PROJECT_ID/srh-photo/app:latest'
+
+  # Deploy container image to Cloud Run
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    entrypoint: gcloud
+    args:
+      - 'run'
+      - 'deploy'
+      - 'srh-photo'
+      - '--image'
+      - 'asia-northeast3-docker.pkg.dev/$PROJECT_ID/srh-photo/app:$COMMIT_SHA'
+      - '--region'
+      - 'asia-northeast3'
+      - '--platform'
+      - 'managed'
+      - '--allow-unauthenticated'
+      - '--min-instances'
+      - '0'
+      - '--max-instances'
+      - '10'
+      - '--memory'
+      - '512Mi'
+      - '--cpu'
+      - '1'
+      - '--timeout'
+      - '300'
+
+images:
+  - 'asia-northeast3-docker.pkg.dev/$PROJECT_ID/srh-photo/app:$COMMIT_SHA'
+  - 'asia-northeast3-docker.pkg.dev/$PROJECT_ID/srh-photo/app:latest'
+
+options:
+  logging: CLOUD_LOGGING_ONLY
