@@ -61,6 +61,22 @@ const ChooseScreen = ({ selectFrame }) => {
           >
             <div className="frame-image spam-frame"></div>
           </div>
+          <div
+            className={`frame-option ${
+              selectedFrame === "sgolangv1_frame" ? "selected" : ""
+            }`}
+            onClick={() => handleFrameSelect("golangv1_frame")}
+          >
+            <div className="frame-image golangv1-frame"></div>
+          </div>
+          <div
+            className={`frame-option ${
+              selectedFrame === "golangv2_frame" ? "selected" : ""
+            }`}
+            onClick={() => handleFrameSelect("golangv2_frame")}
+          >
+            <div className="frame-image golangv2-frame"></div>
+          </div>
         </div>
       </div>
       

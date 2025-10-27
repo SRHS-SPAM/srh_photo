@@ -22,16 +22,16 @@
   margin-bottom: 3%;
 }
 
-/* .frame-container {
-  width: 100%;
+.frame-container {
+  width: 75%;
   height: 70%;
   overflow-x: scroll;
   overflow-y: hidden;
   white-space: nowrap;
-} */
+}
 
 .frame-container2 {
-  width: 100%;
+  width: 180%;
   height: 100%;
   display: flex;
   align-items: center;
@@ -39,9 +39,9 @@
   gap: 2%; /* 프레임 간격 증가 */
 }
 
-/* ::-webkit-scrollbar {
+::-webkit-scrollbar {
   display: none;
-} */
+}
 
 
 .frame-option {
@@ -91,6 +91,13 @@
   background-image: url("/public/spam_frame.png");
 }
 
+.frame-image.golangv1-frame {
+  background-image: url("/public/golangv1_frame.png");
+}
+
+.frame-image.golangv2-frame {
+  background-image: url("/public/golangv2_frame.png");
+}
 
 .next-button {
   padding: 20px 150px; /* 버튼의 상하, 좌우 패딩을 크게 조정 */
