@@ -28,7 +28,7 @@ class Photo(models.Model):
 
         try:
             # QR 코드에 사용할 URL (배포 환경에 맞게 URL을 사용)
-            qr_url = f'https://srh-photo.onrender.com/api/photos/{self.id}/download/'
+            qr_url = f'https://srh-photo-751484481725.asia-northeast3.run.app/api/photos/{self.id}/download/'
 
             # QR 코드 생성
             qr = qrcode.QRCode(

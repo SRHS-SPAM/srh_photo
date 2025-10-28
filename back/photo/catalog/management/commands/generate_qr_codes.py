@@ -24,7 +24,7 @@ class Command(BaseCommand):
                 # QR 코드가 없는 경우에만 생성
                 if not photo.qr_code:
                     # QR 코드에 저장할 URL 생성(배포 후에 이부분 변경)
-                    qr_url = 'https://srh-photo.onrender.com/' + reverse('photo_detail', args=[str(photo.id)])
+                    qr_url = 'https://srh-photo-751484481725.asia-northeast3.run.app/' + reverse('photo_detail', args=[str(photo.id)])
                     
                     # QR 코드 생성
                     qr = qrcode.QRCode(

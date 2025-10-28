@@ -98,6 +98,7 @@ ALLOWED_HOSTS = [
     'srh-photo.onrender.com',
     'srh-photo-d86feda25493.herokuapp.com',
     'spam4cut.com',
+    'srh-photo-751484481725.asia-northeast3.run.app',
     'www.spam4cut.com',
     'localhost',
     '127.0.0.1',
