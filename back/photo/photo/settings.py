@@ -184,6 +184,7 @@ CORS_ALLOWED_ORIGINS = [
     'http://localhost:8000',
     'http://127.0.0.1:3000',
     'https://srh-photo.onrender.com',
+    'https://srh-photo-751484481725.asia-northeast3.run.app',
 ]
 
 # Add Cloud Run URL if provided
@@ -196,6 +197,7 @@ CSRF_TRUSTED_ORIGINS = [
     'http://127.0.0.1:3000',
     'http://localhost:8000',
     'https://srh-photo.onrender.com',
+    'https://srh-photo-751484481725.asia-northeast3.run.app',
     'https://*.run.app',  # Cloud Run domains
 ]
 
