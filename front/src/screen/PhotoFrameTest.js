@@ -84,7 +84,7 @@ const PhotoFrameTest = ({ photos, frameType, onBack, title = "인생네컷" }) =
       // API 기본 URL 결정 (개발 환경 vs 프로덕션 환경)
       const apiBaseUrl = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
         ? 'http://127.0.0.1:8000'
-        : 'https://srh-photo.onrender.com';
+        : 'srh-photo-751484481725.asia-northeast3.run.app';
   
       console.log("현재 호스트:", window.location.hostname);
       console.log("사용할 API 기본 URL:", apiBaseUrl);
