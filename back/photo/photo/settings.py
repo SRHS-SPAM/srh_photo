@@ -33,6 +33,8 @@ DEBUG = os.environ.get('DEBUG', 'True') == 'True'
 
 # Application definition
 
+CORS_ALLOW_CREDENTIALS = True
+
 INSTALLED_APPS = [
     'corsheaders',
     'django.contrib.admin',
@@ -48,16 +50,14 @@ INSTALLED_APPS = [
 ]
 
 MIDDLEWARE = [
-    'corsheaders.middleware.CorsMiddleware',
-    'django.middleware.security.SecurityMiddleware',
-    'django.contrib.sessions.middleware.SessionMiddleware', # <- 1. Session
-    'django.middleware.csrf.CsrfViewMiddleware',          # <- 2. CSRF
-    'django.middleware.security.SecurityMiddleware',      # <- 3. Security (중복)
-    'whitenoise.middleware.WhiteNoiseMiddleware',
+    'corsheaders.middleware.CorsMiddleware',         # CORS를 가장 먼저 처리
+    'django.middleware.security.SecurityMiddleware',  # Security
+    'whitenoise.middleware.WhiteNoiseMiddleware',     # Static files (배포 환경)
+    'django.contrib.sessions.middleware.SessionMiddleware',
+    'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-
 ]
 
 
