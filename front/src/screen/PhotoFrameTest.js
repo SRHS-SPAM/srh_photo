@@ -34,16 +34,16 @@ const frameLayouts = {
     { width: 512, height: 712, top: 861, left: 626 },
   ],
   golangv1_frame: [
-    { width: 512, height: 620, top: 305, left: 63 },
-    { width: 512, height: 620, top: 160, left: 634 },
-    { width: 512, height: 620, top: 972, left: 63 },
-    { width: 512, height: 620, top: 888, left: 634 },
+    { width: 514, height: 650, top: 355, left: 63 },
+    { width: 514, height: 650, top: 160, left: 614 },
+    { width: 514, height: 650, top: 972, left: 63 },
+    { width: 514, height: 650, top: 888, left: 614 },
   ],
   golangv2_frame: [
-    { width: 512, height: 620, top: 305, left: 63 },
-    { width: 512, height: 620, top: 160, left: 634 },
-    { width: 512, height: 620, top: 972, left: 63 },
-    { width: 512, height: 620, top: 888, left: 634 },
+    { width: 514, height: 650, top: 355, left: 63 },
+    { width: 514, height: 650, top: 160, left: 614 },
+    { width: 514, height: 650, top: 972, left: 63 },
+    { width: 514, height: 650, top: 888, left: 614 },
   ],
 };
 
@@ -115,7 +115,7 @@ const PhotoFrameTest = ({ photos, frameType, onBack, title = "인생네컷" }) =
   };
 
   // 이미지를 서버에 업로드하고 QR 코드 URL 받기
- const uploadImageToServer = async (imageUrl) => {
+const uploadImageToServer = async (imageUrl) => {
     try {
     setIsUploading(true);
     // base64 이미지 URL을 Blob으로 변환
