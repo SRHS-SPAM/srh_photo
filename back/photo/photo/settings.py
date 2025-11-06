@@ -102,7 +102,7 @@ ALLOWED_HOSTS = [
     'spam4cut.com',
     'www.spam4cut.com',
     'localhost',
-    'srh-photo-751484481725.asia-northeast3.run.app'
+    'srh-photo-751484481725.asia-northeast3.run.app',
     '127.0.0.1',
     os.environ.get('ALLOWED_HOST', 'localhost'),
     'testserver',  # 추가
