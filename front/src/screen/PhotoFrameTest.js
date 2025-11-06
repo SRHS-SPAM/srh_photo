@@ -124,15 +124,18 @@ const PhotoFrameTest = ({ photos, frameType, onBack, title = "인생네컷" }) =
   
       // API 기본 URL 결정 (개발 환경 vs 프로덕션 환경)
       const apiBaseUrl = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
-        ? 'http://127.0.0.1:8000'
-        : 'srh-photo-751484481725.asia-northeast3.run.app';
-  
-      console.log("현재 호스트:", window.location.hostname);
-      console.log("사용할 API 기본 URL:", apiBaseUrl);
-  
-      // 전체 API URL 구성
-      const apiUrl = `${apiBaseUrl}/api/upload/`;
-      console.log("최종 API URL:", apiUrl);
+            ? 'http://localhost:8000'
+            // 💡 배포 환경에서는 호스트 이름만 사용하거나, URL 스키마만 포함하도록 수정
+            : `https://${window.location.hostname}`; // 🔑 호스트 이름만 사용하도록 수정
+
+        console.log("현재 호스트:", window.location.hostname);
+        console.log("사용할 API 기본 URL:", apiBaseUrl);
+
+        // 🔑 핵심 수정: apiUrl 구성 시 'api/upload/'만 경로로 붙여야 합니다.
+        // apiBaseUrl이 이미 호스트명과 스키마를 포함하고 있으므로, 경로만 추가합니다.
+        const apiUrl = `${apiBaseUrl}/api/upload/`; 
+        
+        console.log("최종 API URL:", apiUrl);
   
       // 서버에 이미지 업로드 - CORS 문제 해결을 위한 설정
       console.log("요청 전송 중..."); 
