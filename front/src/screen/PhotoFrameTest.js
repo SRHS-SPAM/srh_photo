@@ -34,16 +34,16 @@ const frameLayouts = {
     { width: 512, height: 712, top: 861, left: 626 },
   ],
   golangv1_frame: [
-    { width: 512, height: 432, top: 245, left: 63 },
-    { width: 512, height: 432, top: 160, left: 634 },
-    { width: 512, height: 432, top: 972, left: 63 },
-    { width: 512, height: 432, top: 888, left: 634 },
+    { width: 512, height: 620, top: 305, left: 63 },
+    { width: 512, height: 620, top: 160, left: 634 },
+    { width: 512, height: 620, top: 972, left: 63 },
+    { width: 512, height: 620, top: 888, left: 634 },
   ],
   golangv2_frame: [
-    { width: 512, height: 432, top: 245, left: 63 },
-    { width: 512, height: 432, top: 160, left: 634 },
-    { width: 512, height: 432, top: 972, left: 63 },
-    { width: 512, height: 432, top: 888, left: 634 },
+    { width: 512, height: 620, top: 305, left: 63 },
+    { width: 512, height: 620, top: 160, left: 634 },
+    { width: 512, height: 620, top: 972, left: 63 },
+    { width: 512, height: 620, top: 888, left: 634 },
   ],
 };
 
@@ -115,55 +115,44 @@ const PhotoFrameTest = ({ photos, frameType, onBack, title = "인생네컷" }) =
   };
 
   // 이미지를 서버에 업로드하고 QR 코드 URL 받기
-  const uploadImageToServer = async (imageUrl) => {
+ const uploadImageToServer = async (imageUrl) => {
     try {
-      setIsUploading(true);
-      
-      // base64 이미지 URL을 Blob으로 변환
-      const response = await fetch(imageUrl);
-      if (!response.ok) {
-        throw new Error(`이미지 가져오기 실패: ${response.status}`);
-      }
-      const blob = await response.blob();
-      
-      // FormData 생성 및 이미지 추가
-      const formData = new FormData();
-      const timestamp = new Date().getTime();
-      const fileName = `${title}_${timestamp}.png`;
-      
-      formData.append('title', `${title}_${timestamp}`);
-      formData.append('image', blob, fileName);
-  
-      // API 기본 URL 결정 (개발 환경 vs 프로덕션 환경)
-      const apiBaseUrl = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
-            ? 'http://localhost:8000'
-            // 💡 배포 환경에서는 호스트 이름만 사용하거나, URL 스키마만 포함하도록 수정
-            : `https://${window.location.hostname}`; // 🔑 호스트 이름만 사용하도록 수정
+    setIsUploading(true);
+    // base64 이미지 URL을 Blob으로 변환
+    const response = await fetch(imageUrl);
+    if (!response.ok) {
+      throw new Error(`이미지 가져오기 실패: ${response.status}`);
+    }
+    const blob = await response.blob();
+    // FormData 생성 및 이미지 추가
+    const formData = new FormData();
+    const timestamp = new Date().getTime();
+    const fileName = `${title}_${timestamp}.png`;
+    formData.append('title', `${title}_${timestamp}`);
+    formData.append('image', blob, fileName)
+    // ⭐ 핵심 수정: 명시적으로 API 기본 URL 설정
+    const apiBaseUrl = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
+        ? 'http://localhost:8000'
+        // 명시적인 프로덕션/배포 API 기본 URL (예시: 'https://srh-app-02.com')
+        : 'https://srh-photo-751484481725.asia-northeast3.run.app'; // 👈 이 부분을 실제 배포 URL로 바꿔주세요.
 
-        console.log("현재 호스트:", window.location.hostname);
-        console.log("사용할 API 기본 URL:", apiBaseUrl);
+    console.log("현재 호스트:", window.location.hostname);
+    console.log("사용할 API 기본 URL:", apiBaseUrl);
 
-        // 🔑 핵심 수정: apiUrl 구성 시 'api/upload/'만 경로로 붙여야 합니다.
-        // apiBaseUrl이 이미 호스트명과 스키마를 포함하고 있으므로, 경로만 추가합니다.
-        const apiUrl = `${apiBaseUrl}/api/upload/`; 
-        
-        console.log("최종 API URL:", apiUrl);
-  
-      // 서버에 이미지 업로드 - CORS 문제 해결을 위한 설정
-      console.log("요청 전송 중..."); 
-      const uploadResponse = await fetch(apiUrl, {
-        method: 'POST',
-        headers: {
-          // CSRF 토큰은 같은 도메인일 때만 필요
-          // 'X-CSRFToken': getCookie('csrftoken'),
-          'X-Requested-With': 'XMLHttpRequest',
-          // 명시적으로 Content-Type을 설정하지 않음 (FormData가 자동으로 설정)
-        },
-        // credentials: 'include' 대신 CORS 요청에 더 적합한 설정 사용
-        credentials: 'include', // 같은 도메인일 때만 쿠키 전송
-        mode: 'cors', // CORS 모드 명시적 설정
-        body: formData,
-      });
+    // apiUrl 구성 시 'api/upload/' 경로 추가
+    const apiUrl = `${apiBaseUrl}/api/upload/`;
+    console.log("최종 API URL:", apiUrl);
+    // 서버에 이미지 업로드
+    console.log("요청 전송 중...");
+    const uploadResponse = await fetch(apiUrl, {
+      method: 'POST',
+      headers: {
+        'X-Requested-With': 'XMLHttpRequest',
+      },
+      credentials: 'include',
+      mode: 'cors',
+      body: formData,
+    });
 
       console.log("응답 상태:", uploadResponse.status); // 추가
       console.log("응답 헤더:", uploadResponse.headers); // 추가
