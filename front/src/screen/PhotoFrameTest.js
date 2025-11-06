@@ -35,15 +35,15 @@ const frameLayouts = {
   ],
   golangv1_frame: [
     { width: 514, height: 650, top: 355, left: 63 },
-    { width: 514, height: 650, top: 160, left: 614 },
-    { width: 514, height: 650, top: 972, left: 63 },
-    { width: 514, height: 650, top: 888, left: 614 },
+    { width: 514, height: 650, top: 100, left: 614 },
+    { width: 514, height: 650, top: 1010, left: 63 },
+    { width: 514, height: 650, top: 780, left: 614 },
   ],
   golangv2_frame: [
     { width: 514, height: 650, top: 355, left: 63 },
-    { width: 514, height: 650, top: 160, left: 614 },
-    { width: 514, height: 650, top: 972, left: 63 },
-    { width: 514, height: 650, top: 888, left: 614 },
+    { width: 514, height: 650, top: 100, left: 614 },
+    { width: 514, height: 650, top: 1010, left: 63 },
+    { width: 514, height: 650, top: 780, left: 614 },
   ],
 };
 
