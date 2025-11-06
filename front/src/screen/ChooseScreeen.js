@@ -63,7 +63,7 @@ const ChooseScreen = ({ selectFrame }) => {
           </div>
           <div
             className={`frame-option ${
-              selectedFrame === "sgolangv1_frame" ? "selected" : ""
+              selectedFrame === "golangv1_frame" ? "selected" : ""
             }`}
             onClick={() => handleFrameSelect("golangv1_frame")}
           >
