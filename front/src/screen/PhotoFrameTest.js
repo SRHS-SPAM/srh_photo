@@ -34,16 +34,16 @@ const frameLayouts = {
     { width: 512, height: 712, top: 861, left: 626 },
   ],
   golangv1_frame: [
-    { width: 512, height: 532, top: 245, left: 76 },
-    { width: 512, height: 532, top: 160, left: 634 },
-    { width: 512, height: 532, top: 972, left: 76 },
-    { width: 512, height: 532, top: 888, left: 634 },
+    { width: 512, height: 432, top: 245, left: 63 },
+    { width: 512, height: 432, top: 160, left: 634 },
+    { width: 512, height: 432, top: 972, left: 63 },
+    { width: 512, height: 432, top: 888, left: 634 },
   ],
   golangv2_frame: [
-    { width: 512, height: 532, top: 245, left: 76 },
-    { width: 512, height: 532, top: 160, left: 634 },
-    { width: 512, height: 532, top: 972, left: 76 },
-    { width: 512, height: 532, top: 888, left: 634 },
+    { width: 512, height: 432, top: 245, left: 63 },
+    { width: 512, height: 432, top: 160, left: 634 },
+    { width: 512, height: 432, top: 972, left: 63 },
+    { width: 512, height: 432, top: 888, left: 634 },
   ],
 };
 
