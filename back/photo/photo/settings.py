@@ -25,15 +25,13 @@ REACT_APP_DIR = os.path.join(BASE_DIR, '../../front')  # 실제 경로에 맞게
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = os.environ.get('SECRET_KEY', 'django-insecure-&(q+p!pj5u4_lz6#!&=b1^h(#l9pq3et7-pwk3&=r2%9ms*86r')
+SECRET_KEY = 'django-insecure-&(q+p!pj5u4_lz6#!&=b1^h(#l9pq3et7-pwk3&=r2%9ms*86r'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = os.environ.get('DEBUG', 'True') == 'True'
+DEBUG = True
 
 
 # Application definition
-
-CORS_ALLOW_CREDENTIALS = True
 
 INSTALLED_APPS = [
     'corsheaders',
@@ -46,29 +44,32 @@ INSTALLED_APPS = [
     'catalog.apps.CatalogConfig',
     'rest_framework',
     'rest_framework.authtoken',
-    'django_extensions',
 ]
 
 MIDDLEWARE = [
-    'corsheaders.middleware.CorsMiddleware',         # CORS를 가장 먼저 처리
-    'django.middleware.security.SecurityMiddleware',  # Security
-    'whitenoise.middleware.WhiteNoiseMiddleware',     # Static files (배포 환경)
+    'corsheaders.middleware.CorsMiddleware',  # 이게 맨 위로 와야 함
+    'django.middleware.common.CommonMiddleware',
+    'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
+    'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+
 ]
 
 
 ASGI_APPLICATION = 'photo.asgi.application'
 ROOT_URLCONF = 'photo.urls'
 
+REACT_BUILD_DIR = BASE_DIR.parent / 'front' / 'build'
+
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        # React 빌드 폴더를 추가
-        'DIRS': [os.path.join(BASE_DIR, '../../front/build')],
+        'DIRS': [REACT_BUILD_DIR],  # React의 실제 index.html 경로
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -97,18 +98,16 @@ DATABASES = {
 ALLOWED_HOSTS = [
     'srh-photo.onrender.com',
     'srh-photo-d86feda25493.herokuapp.com',
+    'srh-photo-sc-b1229d9be6d2.herokuapp.com',
     'spam4cut.com',
-    'srh-photo-751484481725.asia-northeast3.run.app',
     'www.spam4cut.com',
     'localhost',
+    'srh-photo-751484481725.asia-northeast3.run.app'
     '127.0.0.1',
     os.environ.get('ALLOWED_HOST', 'localhost'),
-    '.run.app',  # Cloud Run domains
-]
+    'testserver',  # 추가
 
-# Add Cloud Run specific allowed host if provided
-if cloud_run_host := os.environ.get('CLOUD_RUN_SERVICE_URL'):
-    ALLOWED_HOSTS.append(cloud_run_host)
+]
 
 # settings.py에 아래 설정 추가 (또는 확인)
 REST_FRAMEWORK = {
@@ -123,7 +122,7 @@ REST_FRAMEWORK = {
 }
 
 # Password validation
-# https://docs.djangoproject.com/en/5.1/ref/settings/#auth-password-validators
+# https://docs.djangoproject.com/en/5.1/ref/settings/#auth-password-validators  
 
 AUTH_PASSWORD_VALIDATORS = [
     {
@@ -161,12 +160,17 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
 STATICFILES_DIRS = [
-    os.path.join(REACT_APP_DIR, 'build/static'),
-    os.path.join(BASE_DIR, 'public'),
-    os.path.join(BASE_DIR, 'build'),
-    
+    os.path.join(BASE_DIR, '../front/public'),
+    os.path.join(BASE_DIR, '../front/build'),
+    os.path.join(BASE_DIR, '../front/build/static'),
+    os.path.join(BASE_DIR, 'front', 'build', 'static')
 ]
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+
+# [4] 정적 파일 설정 (React 정적 리소스)
+react_static_dir = REACT_BUILD_DIR / 'static'
+if react_static_dir.exists():
+    STATICFILES_DIRS.append(str(react_static_dir))
 
 if not DEBUG:
     MIDDLEWARE.insert(1, 'whitenoise.middleware.WhiteNoiseMiddleware')
@@ -177,7 +181,7 @@ if not DEBUG:
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 #개발중일 때만 모든 도메인 허용으로 ㄱ
-CORS_ALLOW_ALL_ORIGINS = False
+CORS_ALLOW_CREDENTIALS = True
 
 CORS_ALLOWED_ORIGINS = [
     'http://localhost:3000',  # React 앱이 실행되는 도메인 (개발 환경)
@@ -185,12 +189,10 @@ CORS_ALLOWED_ORIGINS = [
     'http://127.0.0.1:3000',
     'https://srh-photo.onrender.com',
     'https://srh-photo-751484481725.asia-northeast3.run.app',
+    "https://srh-photo-d86feda25493.herokuapp.com",
+    "https://srh-photo-sc-b1229d9be6d2.herokuapp.com",
+    'https://spam4cut.com',
 ]
-
-# Add Cloud Run URL if provided
-if cloud_run_url := os.environ.get('CLOUD_RUN_SERVICE_URL'):
-    CORS_ALLOWED_ORIGINS.append(cloud_run_url)
-
 # 신뢰할 수 있는 출처 설정 (CSRF 검증에 사용됨)
 CSRF_TRUSTED_ORIGINS = [
     'http://localhost:3000',
@@ -198,12 +200,10 @@ CSRF_TRUSTED_ORIGINS = [
     'http://localhost:8000',
     'https://srh-photo.onrender.com',
     'https://srh-photo-751484481725.asia-northeast3.run.app',
-    'https://*.run.app',  # Cloud Run domains
+    "https://srh-photo-d86feda25493.herokuapp.com",
+    "https://srh-photo-sc-b1229d9be6d2.herokuapp.com",
+    'https://spam4cut.com',
 ]
-
-# Add Cloud Run URL if provided
-if cloud_run_url := os.environ.get('CLOUD_RUN_SERVICE_URL'):
-    CSRF_TRUSTED_ORIGINS.append(cloud_run_url)
 
 CORS_ALLOW_METHODS = [
     "DELETE",
@@ -225,5 +225,3 @@ CORS_ALLOW_HEADERS = [
     "x-csrftoken",
     "x-requested-with",
 ]
-
-
