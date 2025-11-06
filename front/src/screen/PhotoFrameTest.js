@@ -33,6 +33,18 @@ const frameLayouts = {
     { width: 512, height: 712, top: 952, left: 63 },
     { width: 512, height: 712, top: 861, left: 626 },
   ],
+  golangv1_frame: [
+    { width: 512, height: 712, top: 220, left: 63 },
+    { width: 512, height: 712, top: 137, left: 626 },
+    { width: 512, height: 712, top: 952, left: 63 },
+    { width: 512, height: 712, top: 861, left: 626 },
+  ],
+  golangv2_frame: [
+    { width: 512, height: 712, top: 220, left: 63 },
+    { width: 512, height: 712, top: 137, left: 626 },
+    { width: 512, height: 712, top: 952, left: 63 },
+    { width: 512, height: 712, top: 861, left: 626 },
+  ],
 };
 
 const PhotoFrameTest = ({ photos, frameType, onBack, title = "인생네컷" }) => {
