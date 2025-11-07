@@ -3,48 +3,48 @@ import html2canvas from "html2canvas";
 import "./PhotoFrameTest.css";
 
 const frameLayouts = {
-  pixcel_frame: [
-    { width: 512, height: 712, top: 128, left: 78 },
-    { width: 512, height: 712, top: 128, left: 610 },
-    { width: 512, height: 712, top: 845, left: 78 },
-    { width: 512, height: 712, top: 845, left: 610 },
-  ],
-  light_frame: [
-    { width: 512, height: 712, top: 128, left: 78 },
-    { width: 512, height: 712, top: 128, left: 610 },
-    { width: 512, height: 712, top: 845, left: 78 },
-    { width: 512, height: 712, top: 845, left: 610 },
-  ],
-  dark_frame: [
-    { width: 512, height: 712, top: 128, left: 78 },
-    { width: 512, height: 712, top: 128, left: 610 },
-    { width: 512, height: 712, top: 845, left: 78 },
-    { width: 512, height: 712, top: 845, left: 610 },
-  ],
-  ohpan_frame: [
-    { width: 472, height: 652, top: 245, left: 76 },
-    { width: 472, height: 652, top: 160, left: 634 },
-    { width: 472, height: 652, top: 972, left: 76 },
-    { width: 472, height: 652, top: 888, left: 634 },
-  ],
-  spam_frame: [
-    { width: 512, height: 712, top: 220, left: 63 },
-    { width: 512, height: 712, top: 137, left: 626 },
-    { width: 512, height: 712, top: 952, left: 63 },
-    { width: 512, height: 712, top: 861, left: 626 },
-  ],
-  golangv1_frame: [
-    { width: 512, height: 620, top: 305, left: 63 },
-    { width: 512, height: 620, top: 160, left: 634 },
-    { width: 512, height: 620, top: 972, left: 63 },
-    { width: 512, height: 620, top: 888, left: 634 },
-  ],
-  golangv2_frame: [
-    { width: 512, height: 620, top: 305, left: 63 },
-    { width: 512, height: 620, top: 160, left: 634 },
-    { width: 512, height: 620, top: 972, left: 63 },
-    { width: 512, height: 620, top: 888, left: 634 },
-  ],
+    pixcel_frame: [
+        { width: 512, height: 712, top: 128, left: 78 },
+        { width: 512, height: 712, top: 128, left: 610 },
+        { width: 512, height: 712, top: 845, left: 78 },
+        { width: 512, height: 712, top: 845, left: 610 },
+    ],
+    light_frame: [
+        { width: 512, height: 712, top: 128, left: 78 },
+        { width: 512, height: 712, top: 128, left: 610 },
+        { width: 512, height: 712, top: 845, left: 78 },
+        { width: 512, height: 712, top: 845, left: 610 },
+    ],
+    dark_frame: [
+        { width: 512, height: 712, top: 128, left: 78 },
+        { width: 512, height: 712, top: 128, left: 610 },
+        { width: 512, height: 712, top: 845, left: 78 },
+        { width: 512, height: 712, top: 845, left: 610 },
+    ],
+    ohpan_frame: [
+        { width: 472, height: 652, top: 245, left: 76 },
+        { width: 472, height: 652, top: 160, left: 634 },
+        { width: 472, height: 652, top: 972, left: 76 },
+        { width: 472, height: 652, top: 888, left: 634 },
+    ],
+    spam_frame: [
+        { width: 512, height: 712, top: 220, left: 63 },
+        { width: 512, height: 712, top: 137, left: 626 },
+        { width: 512, height: 712, top: 952, left: 63 },
+        { width: 512, height: 712, top: 861, left: 626 },
+    ],
+    golangv1_frame: [
+        { width: 524, height: 650, top: 368, left: 61 },
+        { width: 524, height: 650, top: 100, left: 618 },
+        { width: 524, height: 650, top: 1020, left: 61 },
+        { width: 524, height: 650, top: 780, left: 618 },
+    ],
+    golangv2_frame: [
+        { width: 514, height: 650, top: 355, left: 63 },
+        { width: 514, height: 650, top: 100, left: 614 },
+        { width: 514, height: 650, top: 1010, left: 63 },
+        { width: 514, height: 650, top: 780, left: 614 },
+    ],
 };
 
 const PhotoFrameTest = ({ photos, frameType, onBack, title = "인생네컷" }) => {
@@ -374,46 +374,46 @@ const PhotoFrameTest = ({ photos, frameType, onBack, title = "인생네컷" }) =
   }, [photos, frameType]);
 
   return (
-    <div className="result-container">
-      <div className="photo-frame-container">
-        {/* 미리보기 영역 */}
-        <div className="preview-container">
-          {isPreviewReady && mergedImageUrl ? (// 합성된 이미지가 있으면 보여주기
-            <div className="merged-image-preview" >
-              <img src={mergedImageUrl} alt="합성된 인생네컷" className="result-image"/>
-            </div>
-          ) : ( // 로딩 중이거나 합성 실패 시 보여주는 부분 
-            <div className="loading-preview">
-              <p>이미지 합성 중...</p>
-            </div>
-          )}
-          <button
-            className="print-button"
-            onClick={() => handleAction("print", "canvas")}
-            disabled={isLoading}
-          >
-            {isLoading ? "처리 중..." : "출력"}
-          </button>
-        </div>
-        
-        <div className="section2">
-          <div className="qr-section">
-            <p className="gle">QR 코드를 스캔해 인생네컷을 저장하세요!</p>
-            {isUploading ? (
-              <div className="qr-loading">업로드 중...</div>
-            ) : qrCodeUrl ? (
-              <div className="qr-image">
-                <img src={qrCodeUrl} alt="QR 코드" style={{ width: "100%", height: "100%" }}/>
-              </div>
-            ) : (
-              <div className="qr-placeholder">QR</div>
-            )}
-          </div>
-          
-          <button className="back-button" onClick={onBack}>
-            처음으로 {'>'}
-          </button>
-        </div>
+    <div className="result-container">
+      <div className="photo-frame-container">
+        {/* 미리보기 영역 */}
+        <div className="preview-container">
+          {isPreviewReady && mergedImageUrl ? (// 합성된 이미지가 있으면 보여주기
+            <div className="merged-image-preview" >
+              <img src={mergedImageUrl} alt="합성된 인생네컷" className="result-image"/>
+            </div>
+          ) : ( // 로딩 중이거나 합성 실패 시 보여주는 부분 
+            <div className="loading-preview">
+              <p>이미지 합성 중...</p>
+            </div>
+          )}
+          <button
+            className="print-button"
+            onClick={() => handleAction("print", "canvas")}
+            disabled={isLoading}
+          >
+            {isLoading ? "처리 중..." : "출력"}
+          </button>
+        </div>
+        
+        <div className="section2">
+          <div className="qr-section">
+            <p className="gle">QR 코드를 스캔해 인생네컷을 저장하세요!</p>
+            {isUploading ? (
+              <div className="qr-loading">업로드 중...</div>
+            ) : qrCodeUrl ? (
+              <div className="qr-image">
+                <img src={qrCodeUrl} alt="QR 코드" style={{ width: "100%", height: "100%" }}/>
+              </div>
+            ) : (
+              <div className="qr-placeholder">QR</div>
+            )}
+          </div>
+          
+          <button className="back-button" onClick={onBack}>
+            처음으로 {'>'}
+          </button>
+        </div>
 
         {/* 숨겨진 프레임 컨테이너 (html2canvas 용) */}
         <div className="frame_container" ref={containerRef}>
