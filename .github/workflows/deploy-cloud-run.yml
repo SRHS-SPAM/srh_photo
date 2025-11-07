@@ -76,3 +76,36 @@ jobs:
           SERVICE_URL=$(gcloud run services describe $SERVICE_NAME --region=$REGION --format='value(status.url)')
           echo "Service deployed to: $SERVICE_URL"
           echo "CLOUD_RUN_SERVICE_URL=$SERVICE_URL" >> $GITHUB_ENV
+
+      - name: Deploy to Cloud Run
+        env:
+          PROJECT_ID: ${{ secrets.GCP_PROJECT_ID }}
+          SERVICE_NAME: srh-photo
+          REGION: asia-northeast3
+        run: |
+          DB_VARS="DB_HOST=${{ secrets.DB_HOST }},DB_NAME=${{ secrets.DB_NAME }},DB_USER=${{ secrets.DB_USER }},DB_PASSWORD=${{ secrets.DB_PASSWORD }},DB_PORT=${{ secrets.DB_PORT }}"
+          
+          gcloud run deploy $SERVICE_NAME \
+            --image $IMAGE_NAME \
+            --platform managed \
+            --region $REGION \
+            --allow-unauthenticated \
+            --set-env-vars "DEBUG=False" \
+            --set-env-vars "SECRET_KEY=${{ secrets.DJANGO_SECRET_KEY }}" \
+            --set-env-vars "$DB_VARS" \
+            --min-instances 0 \
+            --max-instances 10 \
+            --memory 512Mi \
+            --cpu 1 \
+            --timeout 300
+
+      - name: Get Service URL and Set Env Vars
+        env:
+          SERVICE_NAME: srh-photo
+          REGION: asia-northeast3
+        run: |
+          SERVICE_URL=$(gcloud run services describe $SERVICE_NAME --region=$REGION --format='value(status.url)')
+          echo "Service deployed to: $SERVICE_URL"
+          
+          echo "REACT_APP_API_URL=$SERVICE_URL" >> $GITHUB_ENV 
+          echo "CLOUD_RUN_SERVICE_URL=$SERVICE_URL" >> $GITHUB_ENV
