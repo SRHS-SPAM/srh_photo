@@ -55,4 +55,4 @@ ENV PORT=8080
 EXPOSE 8080
 
 # Run gunicorn
-CMD exec gunicorn --bind :$PORT --workers 1 --threads 8 --timeout 0 photo.wsgi:application
+CMD sh -c "python manage.py migrate --noinput && exec gunicorn --bind :$PORT --workers 1 --threads 8 --timeout 0 photo.wsgi:application"
