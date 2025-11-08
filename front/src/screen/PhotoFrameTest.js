@@ -283,72 +283,73 @@ const PhotoFrameTest = ({ photos, frameType, onBack, title = "인생네컷" }) =
     });
   };
 
-  // 다운로드/출력 메소드
-  const handleAction = (action, method = "html2canvas") => {
-    if (method === "canvas") {
-      // Canvas 방식을 사용하여 이미지 합성 후 처리
-      setIsLoading(true);
-      mergeImagesWithCanvas().then(imgData => {
-        if (!imgData) {
-          setIsLoading(false);
-          alert("이미지 합성 중 오류가 발생했습니다.");
-          return;
-        }
-      
-        if (action === "print") {
-          const printContent = `
-          <html>
-            <head>
-              <title>${title}</title>
-              <style>
-                @page {
-                  size: 100mm 148mm; /* Hagaki size */
-                  margin: 0;
-                }
-                body {
-                  margin: 0;
-                  padding: 0;
-                }
-                img {
-                  width: 100mm;
-                  height: 148mm;
-                  object-fit: contain;
-                }
-              </style>
-            </head>
-            <body>
-              <img src="${imgData}" alt="Print Image">
-              <script>
-                window.onload = function() {
-                  setTimeout(function() {
-                    window.print();
-                    window.close();
-                  }, 500);
-                };
-              </script>
-            </body>
-          </html>
-        `;
-          const printWindow = window.open("", "_blank");
-          if (printWindow) {
-            printWindow.document.write(printContent);
-            printWindow.document.close();
-          } else {
-            alert("팝업이 차단되었습니다. 팝업 차단을 해제하고 다시 시도해주세요.");
-          }
-        } else if (action === "download") {
-          const link = document.createElement("a");
-          link.href = imgData;
-          link.download = `${title}_${new Date().getTime()}.png`;
-          link.click();
-        }
-        setIsLoading(false);
-      });
-    } else {
-      // html2canvas 방식 사용
-      captureWithHtml2Canvas(action);
-    }
-  };
+   // 다운로드/출력 메소드
+  const handleAction = (action, method = "html2canvas") => {
+    if (method === "canvas") {
+      // Canvas 방식을 사용하여 이미지 합성 후 처리
+      setIsLoading(true);
+      mergeImagesWithCanvas().then(imgData => {
+        if (!imgData) {
+          setIsLoading(false);
+          alert("이미지 합성 중 오류가 발생했습니다.");
+          return;
+        }
+      
+        if (action === "print") {
+          const printContent = `
+          <html>
+            <head>
+              <title>${title}</title>
+              <style>
+                @page {
+                  size: 100mm 148mm; /* Hagaki size */
+                  margin: 0;
+                }
+                body {
+                  margin: 0;
+                  padding: 0;
+                }
+                img {
+                  width: 100mm;
+                  height: 148mm;
+                  object-fit: contain;
+                }
+              </style>
+            </head>
+            <body>
+              <img src="${imgData}" alt="Print Image">
+              <script>
+                window.onload = function() {
+                  setTimeout(function() {
+                    window.print();
+                    window.close();
+                  }, 500);
+                };
+              </script>
+            </body>
+          </html>
+        `;
+          const printWindow = window.open("", "_blank");
+          if (printWindow) {
+            printWindow.document.write(printContent);
+            printWindow.document.close();
+          } else {
+            alert("팝업이 차단되었습니다. 팝업 차단을 해제하고 다시 시도해주세요.");
+          }
+        } else if (action === "download") {
+          const link = document.createElement("a");
+          link.href = imgData;
+          link.download = `${title}_${new Date().getTime()}.png`;
+          link.click();
+        }
+        setIsLoading(false);
+      });
+    } else {
+      // html2canvas 방식 사용
+      captureWithHtml2Canvas(action);
+    }
+  };
+
 
   // 프레임 이미지 로드 확인
   const handleFrameLoad = () => {
