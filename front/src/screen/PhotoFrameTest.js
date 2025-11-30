@@ -33,17 +33,17 @@ const frameLayouts = {
         { width: 512, height: 712, top: 952, left: 63 },
         { width: 512, height: 712, top: 861, left: 626 },
     ],
-    golangv1_frame: [
+    in_frame: [
         { width: 524, height: 650, top: 368, left: 61 },
         { width: 524, height: 650, top: 100, left: 618 },
         { width: 524, height: 650, top: 1020, left: 61 },
-        { width: 524, height: 650, top: 780, left: 618 },
+        { width: 524, height: 650, top: 770, left: 618 },
     ],
-    golangv2_frame: [
-        { width: 514, height: 650, top: 355, left: 63 },
-        { width: 514, height: 650, top: 100, left: 614 },
-        { width: 514, height: 650, top: 1010, left: 63 },
-        { width: 514, height: 650, top: 780, left: 614 },
+    in_frame2: [
+        { width: 530, height: 650, top: 370, left: 49 },
+        { width: 532, height: 650, top: 100, left: 612 },
+        { width: 530, height: 650, top: 1025, left: 49 },
+        { width: 532, height: 650, top: 778, left: 612 },
     ],
 };
 

@@ -92,11 +92,11 @@
 }
 
 .frame-image.golangv1-frame {
-  background-image: url("/public/golangv1_frame.png");
+  background-image: url("/public/in_frame.png");
 }
 
 .frame-image.golangv2-frame {
-  background-image: url("/public/golangv2_frame.png");
+  background-image: url("/public/in_frame2.png");
 }
 
 .next-button {
