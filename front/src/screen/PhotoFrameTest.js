@@ -232,10 +232,23 @@ const PhotoFrameTest = ({ photos, frameType, onBack, title = "인생네컷" }) =
               <head>
                 <title>${title}</title>
                 <style>
-                  @page {
-                    size: 100mm 148mm; /* Hagaki size */
-                    margin: 0;
-                  }
+                  * {
+                    margin: 0;
+                    padding: 0;
+                    box-sizing: border-box;
+                  }
+                  @page {
+                    size: 100mm 148mm;
+                    margin: 0;
+                  }
+                  @media print {
+                    html, body {
+                      width: 100mm;
+                      height: 148mm;
+                      margin: 0;
+                      padding: 0;
+                    }
+                  }
                   body {
                     margin: 0;
                     padding: 0;
