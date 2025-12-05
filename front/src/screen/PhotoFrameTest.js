@@ -3,7 +3,7 @@ import html2canvas from "html2canvas";
 import "./PhotoFrameTest.css";
 
 const frameLayouts = {
-    pixcel_frame: [
+    pixcel_frame: [
         { width: 512, height: 712, top: 128, left: 78 },
         { width: 512, height: 712, top: 128, left: 610 },
         { width: 512, height: 712, top: 845, left: 78 },
@@ -48,264 +48,242 @@ const frameLayouts = {
 };
 
 const PhotoFrameTest = ({ photos, frameType, onBack, title = "인생네컷" }) => {
-  const layouts = frameLayouts[frameType] || [];
-  const canvasRef = useRef(null);
-  const containerRef = useRef(null);
-  const [isLoading, setIsLoading] = useState(false);
-  const [mergedImageUrl, setMergedImageUrl] = useState(null);
-  const [isPreviewReady, setIsPreviewReady] = useState(false);
-  const [frameLoaded, setFrameLoaded] = useState(false);
-  const [qrCodeUrl, setQrCodeUrl] = useState(null);
-  const [isUploading, setIsUploading] = useState(false);
+  const layouts = frameLayouts[frameType] || [];
+  const canvasRef = useRef(null);
+  const containerRef = useRef(null);
+  const [isLoading, setIsLoading] = useState(false);
+  const [mergedImageUrl, setMergedImageUrl] = useState(null);
+  const [isPreviewReady, setIsPreviewReady] = useState(false);
+  const [frameLoaded, setFrameLoaded] = useState(false);
+  const [qrCodeUrl, setQrCodeUrl] = useState(null);
+  const [isUploading, setIsUploading] = useState(false);
 
-  // Canvas로 이미지 합성하기
-  const mergeImagesWithCanvas = async () => {
-    const canvas = canvasRef.current;
-    const ctx = canvas.getContext('2d');
-    
-    // ⭐ 변경: 300dpi 기준 정확한 크기
-    canvas.width = 1181;  // 기존 1200에서 변경
-    canvas.height = 1748; // 기존 1800에서 변경
-    
-    // 레이아웃 스케일 계산
-    const scaleX = 1181 / 1200; // 0.9842
-    const scaleY = 1748 / 1800; // 0.9711
-    
-    try {
-      ctx.fillStyle = "#FFFFFF";
-      ctx.fillRect(0, 0, canvas.width, canvas.height);
-      
-      // 각 사진 로드 및 그리기
-      for (let i = 0; i < Math.min(photos.length, layouts.length); i++) {
-        if (!photos[i]) continue;
-        
-        const img = new Image();
-        img.crossOrigin = "anonymous";
-        await new Promise((resolve, reject) => {
-          img.onload = resolve;
-          img.onerror = reject;
-          img.src = photos[i];
-        });
-        
-        const layout = layouts[i];
-        // ⭐ 스케일 적용
-        ctx.drawImage(
-          img, 
-          layout.left * scaleX, 
-          layout.top * scaleY, 
-          layout.width * scaleX, 
-          layout.height * scaleY
-        );
-      }
-      
-      // 프레임 이미지 로드 및 그리기
-      const frameImg = new Image();
-      frameImg.crossOrigin = "anonymous";
-      await new Promise((resolve, reject) => {
-        frameImg.onload = resolve;
-        frameImg.onerror = (e) => {
-          console.error("프레임 이미지 로드 실패:", e);
-          reject(e);
-        };
-        frameImg.src = `${process.env.PUBLIC_URL}/${frameType}.png`;
-      });
-      
-      ctx.drawImage(frameImg, 0, 0, canvas.width, canvas.height);
-      
-      const url = canvas.toDataURL('image/png');
-      setMergedImageUrl(url);
-      setIsPreviewReady(true);
-      
-      return url;
-    } catch (error) {
-      console.error("이미지 합성 중 오류 발생:", error);
-      return null;
-    }
-  };
+  // Canvas로 이미지 합성하기
+  const mergeImagesWithCanvas = async () => {
+    const canvas = canvasRef.current;
+    const ctx = canvas.getContext('2d');
+    
+    // 프레임의 원래 크기를 기준으로 설정
+    canvas.width = 1200; // 프레임 너비에 맞게 조정
+    canvas.height = 1800; // 프레임 높이에 맞게 조정
+    
+    try {
+      // 배경 그리기 (프레임이 투명 배경인 경우)
+      ctx.fillStyle = "#FFFFFF";
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      
+      // 각 사진 로드 및 그리기
+      for (let i = 0; i < Math.min(photos.length, layouts.length); i++) {
+        if (!photos[i]) continue;
+        
+        const img = new Image();
+        img.crossOrigin = "anonymous";
+        await new Promise((resolve, reject) => {
+          img.onload = resolve;
+          img.onerror = reject;
+          img.src = photos[i];
+        });
+        
+        const layout = layouts[i];
+        ctx.drawImage(img, layout.left, layout.top, layout.width, layout.height);
+      }
+      
+      // 프레임 이미지 로드 및 그리기
+      const frameImg = new Image();
+      frameImg.crossOrigin = "anonymous";
+      await new Promise((resolve, reject) => {
+        frameImg.onload = resolve;
+        frameImg.onerror = (e) => {
+          console.error("프레임 이미지 로드 실패:", e);
+          reject(e);
+        };
+        frameImg.src = `${process.env.PUBLIC_URL}/${frameType}.png`;
+      });
+      
+      ctx.drawImage(frameImg, 0, 0, canvas.width, canvas.height);
+      
+      // 결과 URL 설정
+      const url = canvas.toDataURL('image/png');
+      setMergedImageUrl(url);
+      setIsPreviewReady(true);
+      
+      return url;
+    } catch (error) {
+      console.error("이미지 합성 중 오류 발생:", error);
+      return null;
+    }
+  };
 
-  // 이미지를 서버에 업로드하고 QR 코드 URL 받기
+  // 이미지를 서버에 업로드하고 QR 코드 URL 받기
  const uploadImageToServer = async (imageUrl) => {
-    try {
-    setIsUploading(true);
-    // base64 이미지 URL을 Blob으로 변환
-    const response = await fetch(imageUrl);
-    if (!response.ok) {
-      throw new Error(`이미지 가져오기 실패: ${response.status}`);
-    }
-    const blob = await response.blob();
-    // FormData 생성 및 이미지 추가
-    const formData = new FormData();
-    const timestamp = new Date().getTime();
-    const fileName = `${title}_${timestamp}.png`;
-    formData.append('title', `${title}_${timestamp}`);
-    formData.append('image', blob, fileName)
-    
-    // ⭐⭐ 수정된 부분: 환경 변수를 사용하여 API 기본 URL 설정 ⭐⭐
-    const apiBaseUrl = process.env.REACT_APP_API_URL || // 1. Cloud Run 배포 시 주입된 환경 변수 사용
-        (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
-            ? 'http://localhost:8000' // 2. 로컬 개발 환경일 때만 localhost 사용
-            : `https://${window.location.hostname}`); // 3. 환경 변수 없으면 현재 호스트 기반으로 추정
+    try {
+    setIsUploading(true);
+    // base64 이미지 URL을 Blob으로 변환
+    const response = await fetch(imageUrl);
+    if (!response.ok) {
+      throw new Error(`이미지 가져오기 실패: ${response.status}`);
+    }
+    const blob = await response.blob();
+    // FormData 생성 및 이미지 추가
+    const formData = new FormData();
+    const timestamp = new Date().getTime();
+    const fileName = `${title}_${timestamp}.png`;
+    formData.append('title', `${title}_${timestamp}`);
+    formData.append('image', blob, fileName)
+    
+    // ⭐⭐ 수정된 부분: 환경 변수를 사용하여 API 기본 URL 설정 ⭐⭐
+    const apiBaseUrl = process.env.REACT_APP_API_URL || // 1. Cloud Run 배포 시 주입된 환경 변수 사용
+        (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
+            ? 'http://localhost:8000' // 2. 로컬 개발 환경일 때만 localhost 사용
+            : `https://${window.location.hostname}`); // 3. 환경 변수 없으면 현재 호스트 기반으로 추정
 
-    console.log("현재 호스트:", window.location.hostname);
-    console.log("사용할 API 기본 URL:", apiBaseUrl);
+    console.log("현재 호스트:", window.location.hostname);
+    console.log("사용할 API 기본 URL:", apiBaseUrl);
 
-    // apiUrl 구성 시 'api/upload/' 경로 추가
-    const apiUrl = `${apiBaseUrl}/api/upload/`;
-    console.log("최종 API URL:", apiUrl);
-    // 서버에 이미지 업로드
-    console.log("요청 전송 중...");
-    
-    // PhotoFrameTest.js:147
-    const uploadResponse = await fetch(apiUrl, { 
-      method: 'POST',
-      headers: {
-        'X-Requested-With': 'XMLHttpRequest',
-      },
-      credentials: 'include',
-      mode: 'cors',
-      body: formData,
-    });
+    // apiUrl 구성 시 'api/upload/' 경로 추가
+    const apiUrl = `${apiBaseUrl}/api/upload/`;
+    console.log("최종 API URL:", apiUrl);
+    // 서버에 이미지 업로드
+    console.log("요청 전송 중...");
+    
+    // PhotoFrameTest.js:147
+    const uploadResponse = await fetch(apiUrl, { 
+      method: 'POST',
+      headers: {
+        'X-Requested-With': 'XMLHttpRequest',
+      },
+      credentials: 'include',
+      mode: 'cors',
+      body: formData,
+    });
 
-      console.log("응답 상태:", uploadResponse.status); // 추가
-      console.log("응답 헤더:", uploadResponse.headers); // 추가
-  
-      // 서버 응답 확인
-      if (!uploadResponse.ok) {
-        const errorText = await uploadResponse.text();
-        // PhotoFrameTest.js:190
-        throw new Error(`서버 응답 오류(${uploadResponse.status}): ${errorText}`); 
-      }
-  
-      // 응답 데이터 파싱 후 추가
-      const data = await uploadResponse.json();
-      console.log('전체 응답 데이터:', data);
+      console.log("응답 상태:", uploadResponse.status); // 추가
+      console.log("응답 헤더:", uploadResponse.headers); // 추가
+  
+      // 서버 응답 확인
+      if (!uploadResponse.ok) {
+        const errorText = await uploadResponse.text();
+        // PhotoFrameTest.js:190
+        throw new Error(`서버 응답 오류(${uploadResponse.status}): ${errorText}`); 
+      }
+  
+      // 응답 데이터 파싱 후 추가
+      const data = await uploadResponse.json();
+      console.log('전체 응답 데이터:', data);
 
-      // QR 코드 URL 설정 - 수정된 버전
-      if (data.qr_code_url && data.qr_code_url !== null) {
-        console.log('qr_code_url 사용:', data.qr_code_url);
-        setQrCodeUrl(data.qr_code_url);
-      } else if (data.qr_code) {
-        // qr_code_url이 없거나 null인 경우, qr_code 상대 경로 사용
-        const fullQrUrl = `${apiBaseUrl}${data.qr_code}`;
-        console.log('상대 경로:', data.qr_code);
-        console.log('변환된 절대 URL:', fullQrUrl);
-        setQrCodeUrl(fullQrUrl);
-      } else {
-        console.log('QR 코드 정보를 찾을 수 없습니다');
-      }
+      // QR 코드 URL 설정 - 수정된 버전
+      if (data.qr_code_url && data.qr_code_url !== null) {
+        console.log('qr_code_url 사용:', data.qr_code_url);
+        setQrCodeUrl(data.qr_code_url);
+      } else if (data.qr_code) {
+        // qr_code_url이 없거나 null인 경우, qr_code 상대 경로 사용
+        const fullQrUrl = `${apiBaseUrl}${data.qr_code}`;
+        console.log('상대 경로:', data.qr_code);
+        console.log('변환된 절대 URL:', fullQrUrl);
+        setQrCodeUrl(fullQrUrl);
+      } else {
+        console.log('QR 코드 정보를 찾을 수 없습니다');
+      }
 
-      setIsUploading(false);
-      return data;
-    } catch (error) {
-      console.error('이미지 업로드 중 오류 발생:', error);
-      setIsUploading(false);
-      return null;
-    }
-  };
+      setIsUploading(false);
+      return data;
+    } catch (error) {
+      console.error('이미지 업로드 중 오류 발생:', error);
+      setIsUploading(false);
+      return null;
+    }
+  };
 
-  // html2canvas를 이용한 캡처
-  const captureWithHtml2Canvas = (action) => {
-    setIsLoading(true);
-    const frame = containerRef.current;
+  // html2canvas를 이용한 캡처
+  const captureWithHtml2Canvas = (action) => {
+    setIsLoading(true);
+    const frame = containerRef.current;
 
-    if (!frame) {
-      alert("프레임을 찾을 수 없습니다.");
-      setIsLoading(false);
-      return;
-    }
+    if (!frame) {
+      alert("프레임을 찾을 수 없습니다.");
+      setIsLoading(false);
+      return;
+    }
 
-    const images = frame.querySelectorAll("img");
-    const imagePromises = Array.from(images).map((img) => {
-      if (img.complete) return Promise.resolve();
-      return new Promise((resolve) => {
-        img.onload = resolve;
-        img.onerror = resolve;
-      });
-    });
+    const images = frame.querySelectorAll("img");
+    const imagePromises = Array.from(images).map((img) => {
+      if (img.complete) return Promise.resolve();
+      return new Promise((resolve) => {
+        img.onload = resolve;
+        img.onerror = resolve;
+      });
+    });
 
-    Promise.all(imagePromises).then(() => {
-      html2canvas(frame, {
-        scale: 2,
-        useCORS: true,
-        backgroundColor: null,
-        allowTaint: true,
-        width: frame.offsetWidth,
-        height: frame.offsetHeight,
-      })
-        .then((canvas) => {
-          const imgData = canvas.toDataURL("image/png");
-          
-          if (action === "print") {
-            const printContent = `
-            <html>
-              <head>
-                <title>${title}</title>
-                <style>
-                  * {
-                    margin: 0 !important;
-                    padding: 0 !important;
-                    box-sizing: border-box;
-                  }
-                  @page {
-                    size: 100mm 148mm;
-                    margin: 0mm;
-                  }
-                  html, body {
-                    margin: 0 !important;
-                    padding: 0 !important;
-                    width: 100mm;
-                    height: 148mm;
-                    overflow: hidden;
-                  }
-                  img {
-                    display: block;
-                    width: 100mm !important;
-                    height: 148mm !important;
-                    max-width: 100mm !important;
-                    max-height: 148mm !important;
-                    margin: 0 !important;
-                    padding: 0 !important;
-                    object-fit: contain; /* ⭐ cover 대신 contain */
-                  }
-                </style>
-              </head>
-              <body>
-                <img src="${imgData}" alt="Print Image">
-                <script>
-                  window.onload = function() {
-                    setTimeout(function() {
-                      window.print();
-                      window.close();
-                    }, 500);
-                  };
-                </script>
-              </body>
-            </html>
-            `;
-            const printWindow = window.open("", "_blank");
-            if (printWindow) {
-              printWindow.document.write(printContent);
-              printWindow.document.close();
-            } else {
-              alert("팝업이 차단되었습니다. 팝업 차단을 해제하고 다시 시도해주세요.");
-            }
-          } else if (action === "download") {
-            const link = document.createElement("a");
-            link.href = imgData;
-            link.download = `${title}_${new Date().getTime()}.png`;
-            link.click();
-          }
-          setIsLoading(false);
-        })
-        .catch((err) => {
-          console.error("캡처 중 오류 발생:", err);
-          alert("이미지 캡처 중 오류가 발생했습니다.");
-          setIsLoading(false);
-        });
-    });
-  };
+    Promise.all(imagePromises).then(() => {
+      html2canvas(frame, {
+        scale: 2,
+        useCORS: true,
+        backgroundColor: null,
+        allowTaint: true,
+        width: frame.offsetWidth,
+        height: frame.offsetHeight,
+      })
+        .then((canvas) => {
+          const imgData = canvas.toDataURL("image/png");
+          
+          if (action === "print") {
+            const printContent = `
+            <html>
+              <head>
+                <title>${title}</title>
+                <style>
+                  @page {
+                    size: 100mm 148mm; /* Hagaki size */
+                    margin: 0;
+                  }
+                  body {
+                    margin: 0;
+                    padding: 0;
+                  }
+                  img {
+                    width: 100mm;
+                    height: 148mm;
+                    object-fit: contain;
+                  }
+                </style>
+              </head>
+              <body>
+                <img src="${imgData}" alt="Print Image">
+                <script>
+                  window.onload = function() {
+                    setTimeout(function() {
+                      window.print();
+                      window.close();
+                    }, 500);
+                  };
+                </script>
+              </body>
+            </html>
+          `;
+            const printWindow = window.open("", "_blank");
+            if (printWindow) {
+              printWindow.document.write(printContent);
+              printWindow.document.close();
+            } else {
+              alert("팝업이 차단되었습니다. 팝업 차단을 해제하고 다시 시도해주세요.");
+            }
+          } else if (action === "download") {
+            const link = document.createElement("a");
+            link.href = imgData;
+            link.download = `${title}_${new Date().getTime()}.png`;
+            link.click();
+          }
+          setIsLoading(false);
+        })
+        .catch((err) => {
+          console.error("캡처 중 오류 발생:", err);
+          alert("이미지 캡처 중 오류가 발생했습니다.");
+          setIsLoading(false);
+        });
+    });
+  };
 
-   // 다운로드/출력 메소드
+   // 다운로드/출력 메소드
   const handleAction = (action, method = "html2canvas") => {
     if (method === "canvas") {
       // Canvas 방식을 사용하여 이미지 합성 후 처리
@@ -373,30 +351,30 @@ const PhotoFrameTest = ({ photos, frameType, onBack, title = "인생네컷" }) =
   };
 
 
-  // 프레임 이미지 로드 확인
-  const handleFrameLoad = () => {
-    setFrameLoaded(true);
-  };
+  // 프레임 이미지 로드 확인
+  const handleFrameLoad = () => {
+    setFrameLoaded(true);
+  };
 
-  // 이미지 로드 오류 처리
-  const handleFrameError = () => {
-    console.error("프레임 이미지 로드 중 오류 발생");
-    setFrameLoaded(false);
-  };
+  // 이미지 로드 오류 처리
+  const handleFrameError = () => {
+    console.error("프레임 이미지 로드 중 오류 발생");
+    setFrameLoaded(false);
+  };
 
-  // 컴포넌트가 마운트되면 미리 이미지 합성
-  useEffect(() => {
-    if (photos.length > 0 && frameType) {
-      mergeImagesWithCanvas().then(imgUrl => {
-        if (imgUrl) {
-          // 합성된 이미지를 서버에 업로드하고 QR 코드 URL 받기
-          uploadImageToServer(imgUrl);
-        }
-      });
-    }
-  }, [photos, frameType]);
+  // 컴포넌트가 마운트되면 미리 이미지 합성
+  useEffect(() => {
+    if (photos.length > 0 && frameType) {
+      mergeImagesWithCanvas().then(imgUrl => {
+        if (imgUrl) {
+          // 합성된 이미지를 서버에 업로드하고 QR 코드 URL 받기
+          uploadImageToServer(imgUrl);
+        }
+      });
+    }
+  }, [photos, frameType]);
 
-  return (
+  return (
     <div className="result-container">
       <div className="photo-frame-container">
         {/* 미리보기 영역 */}
@@ -438,40 +416,40 @@ const PhotoFrameTest = ({ photos, frameType, onBack, title = "인생네컷" }) =
           </button>
         </div>
 
-        {/* 숨겨진 프레임 컨테이너 (html2canvas 용) */}
-        <div className="frame_container" ref={containerRef}>
-          {photos.map((photo, index) => (
-            <img
-              key={index}
-              src={photo}
-              alt={`사진 ${index + 1}`}
-              className={`photo${index + 1}`}
-              style={{
-                width: layouts[index]?.width / 4,
-                height: layouts[index]?.height / 4,
-                top: layouts[index]?.top / 4,
-                left: layouts[index]?.left / 4,
-                position: 'absolute',
-                objectFit: 'cover'
-              }}
-              crossOrigin="anonymous"
-            />
-          ))}
-          <img
-            src={`${process.env.PUBLIC_URL}/${frameType}.png`} 
-            alt="프레임"
-            className="frame-overlay"
-            onLoad={handleFrameLoad}
-            onError={handleFrameError}
-            crossOrigin="anonymous"
-          />
-        </div>
+        {/* 숨겨진 프레임 컨테이너 (html2canvas 용) */}
+        <div className="frame_container" ref={containerRef}>
+          {photos.map((photo, index) => (
+            <img
+              key={index}
+              src={photo}
+              alt={`사진 ${index + 1}`}
+              className={`photo${index + 1}`}
+              style={{
+                width: layouts[index]?.width / 4,
+                height: layouts[index]?.height / 4,
+                top: layouts[index]?.top / 4,
+                left: layouts[index]?.left / 4,
+                position: 'absolute',
+                objectFit: 'cover'
+              }}
+              crossOrigin="anonymous"
+            />
+          ))}
+          <img
+            src={`${process.env.PUBLIC_URL}/${frameType}.png`} 
+            alt="프레임"
+            className="frame-overlay"
+            onLoad={handleFrameLoad}
+            onError={handleFrameError}
+            crossOrigin="anonymous"
+          />
+        </div>
 
-        {/* 캔버스 영역 (화면에 보이지 않음) */}
-        <canvas ref={canvasRef} className="not-see"/>
-      </div> 
-    </div>
-  );
+        {/* 캔버스 영역 (화면에 보이지 않음) */}
+        <canvas ref={canvasRef} className="not-see"/>
+      </div> 
+    </div>
+  );
 };
 
 export default PhotoFrameTest;
