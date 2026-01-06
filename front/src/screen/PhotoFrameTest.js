@@ -35,14 +35,14 @@ const frameLayouts = {
     ],
     mimi: [
         { width: 524, height: 650, top: 368, left: 61 },
-        { width: 524, height: 650, top: 100, left: 618 },
-        { width: 524, height: 650, top: 1020, left: 61 },
-        { width: 524, height: 650, top: 770, left: 618 },
+        { width: 524, height: 650, top: 100, left: 616 },
+        { width: 524, height: 650, top: 1022, left: 61 },
+        { width: 524, height: 650, top: 770, left: 616 },
     ],
     mimi2: [
         { width: 530, height: 650, top: 370, left: 49 },
         { width: 532, height: 650, top: 100, left: 612 },
-        { width: 530, height: 650, top: 1025, left: 49 },
+        { width: 530, height: 650, top: 1026, left: 49 },
         { width: 532, height: 650, top: 778, left: 612 },
     ],
 };
@@ -95,7 +95,7 @@ const PhotoFrameTest = ({ photos, frameType, onBack, title = "인생네컷" }) =
         });
         
         const layout = layouts[i];
-        
+
         // ⭐ 좌우반전을 위한 transform 설정
         ctx.save(); // 현재 상태 저장
         
