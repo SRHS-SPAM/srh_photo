@@ -33,13 +33,13 @@ const frameLayouts = {
         { width: 512, height: 712, top: 952, left: 63 },
         { width: 512, height: 712, top: 861, left: 626 },
     ],
-    in_frame: [
+    mimi: [
         { width: 524, height: 650, top: 368, left: 61 },
         { width: 524, height: 650, top: 100, left: 618 },
         { width: 524, height: 650, top: 1020, left: 61 },
         { width: 524, height: 650, top: 770, left: 618 },
     ],
-    in_frame2: [
+    mimi2: [
         { width: 530, height: 650, top: 370, left: 49 },
         { width: 532, height: 650, top: 100, left: 612 },
         { width: 530, height: 650, top: 1025, left: 49 },
@@ -95,13 +95,29 @@ const PhotoFrameTest = ({ photos, frameType, onBack, title = "인생네컷" }) =
         });
         
         const layout = layouts[i];
+        
+        // ⭐ 좌우반전을 위한 transform 설정
+        ctx.save(); // 현재 상태 저장
+        
+        // 이미지 중심점으로 이동
+        ctx.translate(
+          (layout.left + layout.width / 2) * scaleX,
+          (layout.top + layout.height / 2) * scaleY
+        );
+        
+        // 좌우반전 (-1은 x축 반전)
+        ctx.scale(-1, 1);
+        
+        // 이미지 그리기 (중심점 기준이므로 위치 조정)
         ctx.drawImage(
-          img, 
-          layout.left * scaleX, 
-          layout.top * scaleY, 
-          layout.width * scaleX, 
+          img,
+          -(layout.width * scaleX) / 2,
+          -(layout.height * scaleY) / 2,
+          layout.width * scaleX,
           layout.height * scaleY
         );
+        
+        ctx.restore(); // 이전 상태로 복원
       }
       
       // 프레임 이미지 로드 및 그리기

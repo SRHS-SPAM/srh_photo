@@ -63,17 +63,17 @@ const ChooseScreen = ({ selectFrame }) => {
           </div>
           <div
             className={`frame-option ${
-              selectedFrame === "in_frame" ? "selected" : ""
+              selectedFrame === "mimi" ? "selected" : ""
             }`}
-            onClick={() => handleFrameSelect("in_frame")}
+            onClick={() => handleFrameSelect("mimi")}
           >
             <div className="frame-image golangv1-frame"></div>
           </div>
           <div
             className={`frame-option ${
-              selectedFrame === "in_frame2" ? "selected" : ""
+              selectedFrame === "mimi2" ? "selected" : ""
             }`}
-            onClick={() => handleFrameSelect("in_frame2")}
+            onClick={() => handleFrameSelect("mimi2")}
           >
             <div className="frame-image golangv2-frame"></div>
           </div>
