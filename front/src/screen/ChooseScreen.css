@@ -26,18 +26,18 @@
 .frame-container {
   width: 75%;
   height: 60%;
-  overflow-x: scroll;
+  /* overflow-x: scroll;
   overflow-y: hidden;
-  white-space: nowrap;
+  white-space: nowrap; */
 }
 
 .frame-container2 {
-  width: 160%;
+  /* width: 160%; */
   height: 100%;
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 2%; /* 프레임 간격 증가 */
+  gap: 2%;
 }
 
 ::-webkit-scrollbar {
