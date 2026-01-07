@@ -72,7 +72,7 @@
 }
 
 /* 각 프레임의 미리보기 이미지 설정 */
-.frame-image.pixcel-frame {
+/* .frame-image.pixcel-frame {
   background-image: url("/public/pixcel_frame.png");
 }
 
@@ -82,15 +82,15 @@
 
 .frame-image.dark-frame {
   background-image: url("/public/dark_frame.png");
-}
+} */
 
 .frame-image.ohpan-frame {
   background-image: url("/public/ohpan_frame.png");
 }
 
-.frame-image.spam-frame {
+/* .frame-image.spam-frame {
   background-image: url("/public/spam_frame.png");
-}
+} */
 
 .frame-image.golangv1-frame {
   background-image: url("/public/mimi.png");

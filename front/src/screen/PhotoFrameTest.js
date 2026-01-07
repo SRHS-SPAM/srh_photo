@@ -3,36 +3,36 @@ import html2canvas from "html2canvas";
 import "./PhotoFrameTest.css";
 
 const frameLayouts = {
-    pixcel_frame: [
-        { width: 512, height: 712, top: 128, left: 78 },
-        { width: 512, height: 712, top: 128, left: 610 },
-        { width: 512, height: 712, top: 845, left: 78 },
-        { width: 512, height: 712, top: 845, left: 610 },
-    ],
-    light_frame: [
-        { width: 512, height: 712, top: 128, left: 78 },
-        { width: 512, height: 712, top: 128, left: 610 },
-        { width: 512, height: 712, top: 845, left: 78 },
-        { width: 512, height: 712, top: 845, left: 610 },
-    ],
-    dark_frame: [
-        { width: 512, height: 712, top: 128, left: 78 },
-        { width: 512, height: 712, top: 128, left: 610 },
-        { width: 512, height: 712, top: 845, left: 78 },
-        { width: 512, height: 712, top: 845, left: 610 },
-    ],
+    // pixcel_frame: [
+    //     { width: 512, height: 712, top: 128, left: 78 },
+    //     { width: 512, height: 712, top: 128, left: 610 },
+    //     { width: 512, height: 712, top: 845, left: 78 },
+    //     { width: 512, height: 712, top: 845, left: 610 },
+    // ],
+    // light_frame: [
+    //     { width: 512, height: 712, top: 128, left: 78 },
+    //     { width: 512, height: 712, top: 128, left: 610 },
+    //     { width: 512, height: 712, top: 845, left: 78 },
+    //     { width: 512, height: 712, top: 845, left: 610 },
+    // ],
+    // dark_frame: [
+    //     { width: 512, height: 712, top: 128, left: 78 },
+    //     { width: 512, height: 712, top: 128, left: 610 },
+    //     { width: 512, height: 712, top: 845, left: 78 },
+    //     { width: 512, height: 712, top: 845, left: 610 },
+    // ],
     ohpan_frame: [
         { width: 472, height: 652, top: 245, left: 76 },
         { width: 472, height: 652, top: 160, left: 634 },
         { width: 472, height: 652, top: 972, left: 76 },
         { width: 472, height: 652, top: 888, left: 634 },
     ],
-    spam_frame: [
-        { width: 512, height: 712, top: 220, left: 63 },
-        { width: 512, height: 712, top: 137, left: 626 },
-        { width: 512, height: 712, top: 952, left: 63 },
-        { width: 512, height: 712, top: 861, left: 626 },
-    ],
+    // spam_frame: [
+    //     { width: 512, height: 712, top: 220, left: 63 },
+    //     { width: 512, height: 712, top: 137, left: 626 },
+    //     { width: 512, height: 712, top: 952, left: 63 },
+    //     { width: 512, height: 712, top: 861, left: 626 },
+    // ],
     mimi: [
         { width: 524, height: 650, top: 368, left: 61 },
         { width: 524, height: 650, top: 100, left: 616 },

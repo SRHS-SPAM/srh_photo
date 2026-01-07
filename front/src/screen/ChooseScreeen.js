@@ -21,7 +21,7 @@ const ChooseScreen = ({ selectFrame }) => {
       <h1 className="main-text">FRAME</h1>
       <div className="frame-container">
         <div className="frame-container2">
-          <div
+          {/* <div
             className={`frame-option ${
               selectedFrame === "pixcel_frame" ? "selected" : ""
             }`}
@@ -44,7 +44,7 @@ const ChooseScreen = ({ selectFrame }) => {
             onClick={() => handleFrameSelect("dark_frame")}
           >
             <div className="frame-image dark-frame"></div>
-          </div>
+          </div> */}
           <div
             className={`frame-option ${
               selectedFrame === "ohpan_frame" ? "selected" : ""
@@ -53,14 +53,14 @@ const ChooseScreen = ({ selectFrame }) => {
           >
             <div className="frame-image ohpan-frame"></div>
           </div>
-          <div
+          {/* <div
             className={`frame-option ${
               selectedFrame === "spam_frame" ? "selected" : ""
             }`}
             onClick={() => handleFrameSelect("spam_frame")}
           >
             <div className="frame-image spam-frame"></div>
-          </div>
+          </div> */}
           <div
             className={`frame-option ${
               selectedFrame === "mimi" ? "selected" : ""
